@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--    animation -->
+    <integer name="time_page_transition">200</integer>
+
+</resources>

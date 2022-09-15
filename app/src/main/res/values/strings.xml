@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">HBMS</string>
+
+    <!--    get in screen -->
+    <string name="get_in">GET IN</string>
+    <string name="enter_your_name">Enter Your Name</string>
+
+    <!--    navigation drawer-->
+    <string name="home">Home</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="plans">Plans</string>
+    <string name="your_database">Your Database</string>
+    <string name="settings">Settings</string>
+    <string name="about">About</string>
+    <string name="share">Share</string>
+    <string name="logout">Logout</string>
+
+
+    <!--    settings-->
+    <string name="on_startup">Show On Startup</string>
+    <string name="both_dashboard_plan_screens">Both dashboard and plans screens</string>
+    <string name="dashboard_screen">Dashboard Screen\n(Recommended)</string>
+    <string name="plans_screen">Plans Screen</string>
+    <string name="not_recommended">(Not recommended)</string>
+    <string name="recommended">(Recommended)</string>
+
+
+
+    <!--    content descriptions-->
+    <string name="mark_done">mark done</string>
+</resources>
