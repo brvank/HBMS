@@ -9,7 +9,9 @@ import android.os.Handler;
 import com.example.homebudget.R;
 import com.example.homebudget.Service.Storage.SharedPreferencesStorage;
 import com.example.homebudget.Util.AppAlert;
+import com.example.homebudget.Util.AppApplication;
 import com.example.homebudget.Util.AppConstant;
+import com.example.homebudget.Util.AppLog;
 
 public class SplashActivity extends AppCompatActivity {
 

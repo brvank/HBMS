@@ -1,5 +1,11 @@
 package com.example.homebudget.View;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
+
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -7,21 +13,11 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
-import androidx.fragment.app.FragmentContainerView;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
 
 import com.example.homebudget.R;
 import com.example.homebudget.Service.Storage.SharedPreferencesStorage;
 import com.example.homebudget.Util.AppAlert;
 import com.example.homebudget.Util.AppConstant;
-import com.example.homebudget.Util.AppLog;
 import com.example.homebudget.Util.AppUtil;
 import com.example.homebudget.View.FragmentView.DashboardFragment;
 import com.example.homebudget.View.FragmentView.PlansFragment;
