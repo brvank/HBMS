@@ -1,31 +1,28 @@
 package com.example.homebudget.View.FragmentView;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.homebudget.Model.Category;
-import com.example.homebudget.Model.Item;
-import com.example.homebudget.Model.Plan;
-import com.example.homebudget.R;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
+
+import com.example.homebudget.Util.AppUtil;
+import com.example.homebudget.View.Adapter.CategoryAdapter;
 import com.example.homebudget.ViewModel.HomeViewModel;
 import com.example.homebudget.databinding.FragmentDashboardBinding;
-
-import java.util.List;
 
 public class DashboardFragment extends Fragment {
 
     FragmentDashboardBinding fragmentDashboardBinding;
 
     HomeViewModel homeViewModel;
+
+    CategoryAdapter categoryAdapter;
 
     public DashboardFragment() {
         // Required empty public constructor
@@ -50,16 +47,14 @@ public class DashboardFragment extends Fragment {
         //instantiating home view model
         homeViewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
 
-        //connecting observers
-        homeViewModel.categoryLiveDataObserve(getViewLifecycleOwner(), new Observer<List<Category>>() {
-            @Override
-            public void onChanged(List<Category> categories) {
-                updateCategories(categories);
-            }
-        });
-    }
+        //instantiating adapter
+        categoryAdapter = new CategoryAdapter(homeViewModel.getCategories());
 
-    private void updateCategories(List<Category> categories){
+        //setting adapter
+        fragmentDashboardBinding.rvCategory.setAdapter(categoryAdapter);
 
+        //setting layout manager
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(requireActivity(), AppUtil.screenInfo(requireActivity().getWindow()).recommendColumns());
+        fragmentDashboardBinding.rvCategory.setLayoutManager(gridLayoutManager);
     }
 }

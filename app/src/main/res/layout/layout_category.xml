@@ -12,6 +12,7 @@
     android:background="@drawable/background_category">
 
     <TextView
+        android:id="@+id/tvCategoryTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:maxLength="20"
@@ -19,6 +20,7 @@
         tools:text="Category title"/>
 
     <TextView
+        android:id="@+id/tvCategoryInfo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:text="Category info in brief"

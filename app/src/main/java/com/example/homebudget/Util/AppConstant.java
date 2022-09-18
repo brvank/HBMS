@@ -17,9 +17,19 @@ public class AppConstant {
     public static String LOGGED_OUT = "You are logged out, please login again!";
     public static String DASHBOARD_PLAN_DISABLE = "You must enable dashboard or plans screen on start up!";
 
+    //data
+    public static String CATEGORY = "Category";
+    public static String PLAN = "Plan";
+    public static String ITEM = "Item";
+    public static String DASHBOARD = "Dashboard";
+
     //logs
     public static String LOG_D = "hb_log_debug: ";
     public static String LOG_E = "hb_log_error: ";
+
+    //dimensions
+    public static int CARD_WIDTH = 128;
+
 
     //months
     public static class MONTHS{

@@ -4,12 +4,14 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/projects/android_native/HomeBudget/app/src/main/res/drawable/add.xml" value="0.153" />
+        <entry key="..\:/projects/android_native/HomeBudget/app/src/main/res/drawable/background_border.xml" value="0.1655" />
         <entry key="..\:/projects/android_native/HomeBudget/app/src/main/res/drawable/background_category.xml" value="0.176" />
         <entry key="..\:/projects/android_native/HomeBudget/app/src/main/res/drawable/background_item.xml" value="0.1655" />
         <entry key="..\:/projects/android_native/HomeBudget/app/src/main/res/drawable/background_plan.xml" value="0.152" />
         <entry key="..\:/projects/android_native/HomeBudget/app/src/main/res/drawable/hamburger_menu.xml" value="0.1655" />
         <entry key="..\:/projects/android_native/HomeBudget/app/src/main/res/drawable/icon_add.xml" value="0.1655" />
         <entry key="..\:/projects/android_native/HomeBudget/app/src/main/res/drawable/layout_item.xml" value="0.1655" />
+        <entry key="..\:/projects/android_native/HomeBudget/app/src/main/res/layout-land/activity_home.xml" value="0.23020833333333332" />
         <entry key="..\:/projects/android_native/HomeBudget/app/src/main/res/layout/activity_dashboard.xml" value="0.22916666666666666" />
         <entry key="..\:/projects/android_native/HomeBudget/app/src/main/res/layout/activity_get_in.xml" value="0.25" />
         <entry key="..\:/projects/android_native/HomeBudget/app/src/main/res/layout/activity_home.xml" value="0.24615384615384617" />
@@ -23,6 +25,7 @@
         <entry key="..\:/projects/android_native/HomeBudget/app/src/main/res/layout/layout_plan.xml" value="0.25" />
         <entry key="..\:/projects/android_native/HomeBudget/app/src/main/res/layout/settings_item.xml" value="0.25" />
         <entry key="..\:/projects/android_native/HomeBudget/app/src/main/res/menu/drawer_menu.xml" value="0.25" />
+        <entry key="..\:/projects/android_native/HomeBudget/app/src/main/res/menu/home_menu.xml" value="0.25" />
         <entry key="..\:/projects/android_native/HomeBudget/app/src/main/res/menu/menu.xml" value="0.25" />
       </map>
     </option>

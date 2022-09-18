@@ -1,8 +1,15 @@
 package com.example.homebudget.Util;
 
+import android.content.res.Configuration;
 import android.view.View;
+import android.view.Window;
+
+import com.example.homebudget.Model.ScreenInfo;
+
+import java.util.HashMap;
 
 public class AppUtil {
+    //conversion
     public static String month(int i){
         String month = "";
         if(i==1){
@@ -45,11 +52,20 @@ public class AppUtil {
         }
     }
 
+    //ui
     public static int visibility(boolean state){
         if(state){
             return View.VISIBLE;
         }else{
             return View.GONE;
         }
+    }
+
+    public static ScreenInfo screenInfo(Window window){
+        Configuration configuration = window.getWindowStyle().getResources().getConfiguration();
+        int width = configuration.screenWidthDp;
+        int height = configuration.screenHeightDp;
+
+        return new ScreenInfo(width, height);
     }
 }

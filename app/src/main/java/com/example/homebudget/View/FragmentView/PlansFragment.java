@@ -1,31 +1,28 @@
 package com.example.homebudget.View.FragmentView;
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.homebudget.Model.Category;
-import com.example.homebudget.Model.Item;
-import com.example.homebudget.Model.Plan;
-import com.example.homebudget.R;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
+
+import com.example.homebudget.Util.AppUtil;
+import com.example.homebudget.View.Adapter.PlanAdapter;
 import com.example.homebudget.ViewModel.HomeViewModel;
 import com.example.homebudget.databinding.FragmentPlansBinding;
-
-import java.util.List;
 
 public class PlansFragment extends Fragment {
 
     FragmentPlansBinding fragmentPlansBinding;
 
     HomeViewModel homeViewModel;
+
+    PlanAdapter planAdapter;
 
     public PlansFragment() {
         // Required empty public constructor
@@ -50,16 +47,14 @@ public class PlansFragment extends Fragment {
         //instantiating home view model
         homeViewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
 
-        //connecting observers
-        homeViewModel.planLiveDataObserve(getViewLifecycleOwner(), new Observer<List<Plan>>() {
-            @Override
-            public void onChanged(List<Plan> plans) {
-                updatePlans(plans);
-            }
-        });
-    }
+        //instantiating adapter
+        planAdapter = new PlanAdapter(homeViewModel.getPlans());
 
-    private void updatePlans(List<Plan> plans){
+        //setting adapter
+        fragmentPlansBinding.rvPlan.setAdapter(planAdapter);
 
+        //setting layout manager
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(requireActivity(), AppUtil.screenInfo(requireActivity().getWindow()).recommendColumns());
+        fragmentPlansBinding.rvPlan.setLayoutManager(gridLayoutManager);
     }
 }

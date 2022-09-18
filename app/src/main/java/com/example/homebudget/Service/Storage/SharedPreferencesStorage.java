@@ -33,4 +33,9 @@ public class SharedPreferencesStorage {
         editor.putBoolean(field, value);
         editor.apply();
     }
+
+    public void clear(){
+        editor.clear();
+        editor.commit();
+    }
 }

@@ -2,6 +2,8 @@ package com.example.homebudget.View;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -13,14 +15,19 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
+import com.example.homebudget.Model.Selection;
 import com.example.homebudget.R;
 import com.example.homebudget.Service.Storage.SharedPreferencesStorage;
 import com.example.homebudget.Util.AppAlert;
 import com.example.homebudget.Util.AppConstant;
 import com.example.homebudget.Util.AppUtil;
+import com.example.homebudget.View.Dialog.AddDialogFragment;
 import com.example.homebudget.View.FragmentView.DashboardFragment;
 import com.example.homebudget.View.FragmentView.PlansFragment;
+import com.example.homebudget.ViewModel.ViewStateViewModel;
 import com.example.homebudget.databinding.ActivityHomeBinding;
 import com.google.android.material.navigation.NavigationView;
 
@@ -28,21 +35,22 @@ public class HomeActivity extends AppCompatActivity {
 
     ActivityHomeBinding activityHomeBinding;
 
-    SharedPreferencesStorage sharedPreferencesStorage;
+    ActivityResultLauncher<Intent> settingsActivityResultLauncher;
 
     DashboardFragment dashboardFragment;
     PlansFragment plansFragment;
 
-    ActivityResultLauncher<Intent> settingsActivityResultLauncher;
+    ViewStateViewModel viewStateViewModel;
 
-    boolean dashboardShow = false;
-    boolean plansShow = false;
+    Bundle savedInstanceState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activityHomeBinding = ActivityHomeBinding.inflate(getLayoutInflater());
         setContentView(activityHomeBinding.getRoot());
+
+        this.savedInstanceState = savedInstanceState;
 
         try{
             initialise();
@@ -53,58 +61,94 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void initialise(){
-        sharedPreferencesStorage = new SharedPreferencesStorage(HomeActivity.this);
-
         setSupportActionBar(activityHomeBinding.tbDashboard);
 
-
-        setupResultLaunchers();
+        setupViewStateViewModel();
+        setupResultLauncher();
         setupDashboard();
         setupNavigationDrawer();
     }
 
-    private void setupResultLaunchers(){
+    private void setupViewStateViewModel(){
+        viewStateViewModel = new ViewModelProvider(HomeActivity.this).get(ViewStateViewModel.class);
+
+        viewStateViewModel.addDashboardShowObserver(HomeActivity.this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean b) {
+                activityHomeBinding.frgDashboard.setVisibility(AppUtil.visibility(b));
+            }
+        });
+
+        viewStateViewModel.addPlanShowObserver(HomeActivity.this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean b) {
+                activityHomeBinding.frgDashboard.setVisibility(AppUtil.visibility(b));
+            }
+        });
+    }
+
+    private void setupResultLauncher(){
         settingsActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
             @Override
             public void onActivityResult(ActivityResult result) {
                 if(result.getResultCode() == RESULT_OK){
-                    setViewStates();
-                    toggleFragmentView();
+                    viewStateViewModel.update();
+                    updateFragmentVisibility();
                 }
             }
         });
     }
 
     private void setupDashboard(){
-        setViewStates();
+        if(savedInstanceState == null){
+            dashboardFragment = new DashboardFragment();
+            plansFragment = new PlansFragment();
 
-        dashboardFragment = new DashboardFragment();
-        plansFragment = new PlansFragment();
+            getSupportFragmentManager().beginTransaction().setReorderingAllowed(true)
+                    .add(activityHomeBinding.frgDashboard.getId(), dashboardFragment)
+                    .commit();
 
-        getSupportFragmentManager().beginTransaction().setReorderingAllowed(true)
-                .add(activityHomeBinding.frgDashboard.getId(), dashboardFragment)
-                .commit();
-
-        getSupportFragmentManager().beginTransaction().setReorderingAllowed(true)
-                .add(activityHomeBinding.frgPlans.getId(), plansFragment)
-                .commit();
-
-        toggleFragmentView();
-    }
-
-    private void setViewStates(){
-        dashboardShow = sharedPreferencesStorage.getBoolean(AppConstant.DASHBOARD_SHOW_SF);
-        plansShow = sharedPreferencesStorage.getBoolean(AppConstant.PLANS_SHOW_SF);
-
-        if(!(dashboardShow || plansShow)){
-            dashboardShow = true;
-            sharedPreferencesStorage.setBoolean(AppConstant.DASHBOARD_SHOW_SF, true);
+            getSupportFragmentManager().beginTransaction().setReorderingAllowed(true)
+                    .add(activityHomeBinding.frgPlans.getId(), plansFragment)
+                    .commit();
         }
+
+
+        //update fragment visibility
+        updateFragmentVisibility();
+
+        //adding observers
+        viewStateViewModel.addDashboardShowObserver(HomeActivity.this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean b) {
+                activityHomeBinding.frgDashboard.setVisibility(AppUtil.visibility(b));
+            }
+        });
+
+        viewStateViewModel.addPlanShowObserver(HomeActivity.this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean b) {
+                activityHomeBinding.frgPlans.setVisibility(AppUtil.visibility(b));
+            }
+        });
+
+        viewStateViewModel.addUserNameObserver(HomeActivity.this, new Observer<String>() {
+            @Override
+            public void onChanged(String name) {
+                if(name.isEmpty()){
+                    appLogout();
+                }else{
+                    View view = activityHomeBinding.nvDashboard.getHeaderView(0);
+                    TextView tvUserName = view.findViewById(R.id.tvUserName);
+                    tvUserName.setText(AppUtil.firstUpperCase(name));
+                }
+            }
+        });
     }
 
-    private void toggleFragmentView(){
-        activityHomeBinding.frgDashboard.setVisibility(AppUtil.visibility(dashboardShow));
-        activityHomeBinding.frgPlans.setVisibility(AppUtil.visibility(plansShow));
+    private void updateFragmentVisibility(){
+        activityHomeBinding.frgDashboard.setVisibility(AppUtil.visibility(viewStateViewModel.getDashboardShow()));
+        activityHomeBinding.frgPlans.setVisibility(AppUtil.visibility(viewStateViewModel.getPlansShow()));
     }
 
     private void setupNavigationDrawer(){
@@ -123,14 +167,10 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        String name = sharedPreferencesStorage.get(AppConstant.USER_NAME_SF);
+        String name = viewStateViewModel.getUserName();
 
         if(name.isEmpty()){
-            AppAlert.toastLong(HomeActivity.this, AppConstant.LOGGED_OUT);
-            Intent intent = new Intent(HomeActivity.this, GetInActivity.class);
-            startActivity(intent);
-            finish();
-            enterTransition();
+            appLogout();
         }else{
             View view = activityHomeBinding.nvDashboard.getHeaderView(0);
             TextView tvUserName = view.findViewById(R.id.tvUserName);
@@ -180,7 +220,17 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void logout(){
-        AppAlert.toast(HomeActivity.this, "Logout function");
+        closeDrawer();
+        appLogout();
+    }
+
+    private void appLogout(){
+        viewStateViewModel.logout(HomeActivity.this);
+        AppAlert.toast(HomeActivity.this, AppConstant.LOGGED_OUT);
+        Intent intent = new Intent(HomeActivity.this, SplashActivity.class);
+        startActivity(intent);
+        finish();
+        enterTransition();
     }
 
     private void share(){
@@ -201,6 +251,45 @@ public class HomeActivity extends AppCompatActivity {
 
     private void exitTransition(){
         overridePendingTransition(R.anim.no_anim, R.anim.slide_out_right);
+    }
+
+    private void add(){
+        boolean dashboardShow = viewStateViewModel.getDashboardShow();
+        boolean plansShow = viewStateViewModel.getPlansShow();
+
+        if(dashboardShow && plansShow){
+            //show dialog to choose one
+            AddDialogFragment addDialogFragment = new AddDialogFragment(new AddDialogFragment.SelectedResultCallback() {
+                @Override
+                public void selected(Selection.Selected selected) {
+
+                }
+            });
+            addDialogFragment.show(getSupportFragmentManager(), "ADD");
+        }else if(dashboardShow){
+            //direct to add dashboard dialog
+
+        }else{
+            //direct to add plans dialog
+
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.home_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.mnAdd:
+                add();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

@@ -17,6 +17,7 @@
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/tvPlanTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:text="Item 1"
@@ -24,6 +25,7 @@
             android:maxLines="1"/>
 
         <TextView
+            android:id="@+id/tvPlanInfo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:maxLength="40"
@@ -40,6 +42,7 @@
         android:gravity="center_vertical|end">
 
         <ImageView
+            android:id="@+id/ivPlanDone"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:src="@drawable/icon_done"

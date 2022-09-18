@@ -11,6 +11,7 @@ import com.example.homebudget.Model.Plan;
 import com.example.homebudget.Repository.HomeRepository;
 import com.example.homebudget.Repository.RoomDB;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class HomeViewModel extends ViewModel {
@@ -20,13 +21,12 @@ public class HomeViewModel extends ViewModel {
     private final MutableLiveData<List<Item>> itemLiveData;
     private final MutableLiveData<List<Plan>> planLiveData;
 
-
     public HomeViewModel(){
         homeRepository = new HomeRepository();
 
-        categoryLiveData = new MutableLiveData<>();
-        itemLiveData = new MutableLiveData<>();
-        planLiveData = new MutableLiveData<>();
+        categoryLiveData = new MutableLiveData<>(new ArrayList<>());
+        itemLiveData = new MutableLiveData<>(new ArrayList<>());
+        planLiveData = new MutableLiveData<>(new ArrayList<>());
     }
 
     public void categoryLiveDataObserve(LifecycleOwner lifecycleOwner, Observer<List<Category>> observer){
@@ -39,6 +39,18 @@ public class HomeViewModel extends ViewModel {
 
     public void planLiveDataObserve(LifecycleOwner lifecycleOwner, Observer<List<Plan>> observer){
         planLiveData.observe(lifecycleOwner, observer);
+    }
+
+    public void addCategory(Category category){
+        List<Category> list = categoryLiveData.getValue();
+        list.add(category);
+        categoryLiveData.setValue(list);
+    }
+
+    public void removeCategory(int i){
+        List<Category> list = getCategories();
+        list.remove(i);
+        categoryLiveData.setValue(list);
     }
 
     /**
@@ -81,7 +93,7 @@ public class HomeViewModel extends ViewModel {
         }
 
         List<Category> categories = homeRepository.categoryRepository.getCategories();
-        categoryLiveData.postValue(categories);
+        postCategories(categories);
     }
 
     private void queryItem(RoomDB.QUERY q, Object obj) {
@@ -100,7 +112,7 @@ public class HomeViewModel extends ViewModel {
         }
 
         List<Item> items = homeRepository.itemRepository.getItems();
-        itemLiveData.postValue(items);
+        postItems(items);
     }
 
     private void queryPlans(RoomDB.QUERY q, Object obj) {
@@ -119,6 +131,43 @@ public class HomeViewModel extends ViewModel {
         }
 
         List<Plan> plans = homeRepository.planRepository.getPlans();
+        postPlans(plans);
+    }
+
+    //util functions for this view model
+    public List<Category> getCategories(){
+        return categoryLiveData.getValue();
+    }
+
+    private void setCategories(List<Category> categories){
+        categoryLiveData.setValue(categories);
+    }
+
+    private void postCategories(List<Category> categories){
+        categoryLiveData.postValue(categories);
+    }
+
+    public List<Item> getItems(){
+        return itemLiveData.getValue();
+    }
+
+    public void setItems(List<Item> items){
+        itemLiveData.setValue(items);
+    }
+
+    public void postItems(List<Item> items){
+        itemLiveData.postValue(items);
+    }
+
+    public List<Plan> getPlans(){
+        return planLiveData.getValue();
+    }
+
+    public void setPlans(List<Plan> plans){
+        planLiveData.setValue(plans);
+    }
+
+    public void postPlans(List<Plan> plans){
         planLiveData.postValue(plans);
     }
 }

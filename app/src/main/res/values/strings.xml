@@ -25,7 +25,10 @@
     <string name="recommended">(Recommended)</string>
 
 
+    <!--    home menu-->
+    <string name="add">ADD</string>
 
     <!--    content descriptions-->
     <string name="mark_done">mark done</string>
+
 </resources>
