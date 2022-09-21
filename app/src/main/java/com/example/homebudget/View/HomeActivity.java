@@ -43,6 +43,7 @@ public class HomeActivity extends AppCompatActivity {
     ViewStateViewModel viewStateViewModel;
 
     Bundle savedInstanceState;
+    int selectedIndex = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -261,18 +262,32 @@ public class HomeActivity extends AppCompatActivity {
             //show dialog to choose one
             AddDialogFragment addDialogFragment = new AddDialogFragment(new AddDialogFragment.SelectedResultCallback() {
                 @Override
-                public void selected(Selection.Selected selected) {
-
+                public void selected(Selection.Selected selected, int si) {
+                    selectedIndex = si;
+                    switch (selected){
+                        case CATEGORY:
+                            addCategory();
+                            break;
+                        case PLAN:
+                            addPlan();
+                            break;
+                    }
                 }
-            });
+            }, selectedIndex);
             addDialogFragment.show(getSupportFragmentManager(), "ADD");
         }else if(dashboardShow){
-            //direct to add dashboard dialog
-
+            addCategory();
         }else{
-            //direct to add plans dialog
-
+            addPlan();
         }
+    }
+
+    private void addCategory(){
+        AppAlert.toast(HomeActivity.this, "Category add select");
+    }
+
+    private void addPlan(){
+        AppAlert.toast(HomeActivity.this, "Plan add select");
     }
 
     @Override

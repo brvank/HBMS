@@ -90,6 +90,9 @@ public class HomeViewModel extends ViewModel {
             case DELETE:
                 homeRepository.categoryRepository.deleteCategory((Category) obj);
                 break;
+            case DELETE_SELECTED:
+                homeRepository.categoryRepository.deleteSelectedCategories((List<Integer>) obj);
+                break;
         }
 
         List<Category> categories = homeRepository.categoryRepository.getCategories();
@@ -109,6 +112,12 @@ public class HomeViewModel extends ViewModel {
             case DELETE:
                 homeRepository.itemRepository.deleteItem((Item) obj);
                 break;
+            case DELETE_SELECTED:
+                homeRepository.itemRepository.deleteSelectedItems((List<Integer>) obj);
+                break;
+            case DELETE_FOR_PARENT:
+                homeRepository.itemRepository.deleteItemsWithCategoryId((int) obj);
+                break;
         }
 
         List<Item> items = homeRepository.itemRepository.getItems();
@@ -127,6 +136,9 @@ public class HomeViewModel extends ViewModel {
                 break;
             case DELETE:
                 homeRepository.planRepository.deletePlan((Plan) obj);
+                break;
+            case DELETE_SELECTED:
+                homeRepository.planRepository.deleteSelectedPlans((List<Integer>) obj);
                 break;
         }
 

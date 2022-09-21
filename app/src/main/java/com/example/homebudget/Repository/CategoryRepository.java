@@ -29,4 +29,8 @@ public class CategoryRepository {
     public void updateCategory(Category category){
         categoryDao.updateCategory(category);
     }
+
+    public void deleteSelectedCategories(List<Integer> ids){
+        categoryDao.deleteSelectedCategories(ids);
+    }
 }

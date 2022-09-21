@@ -21,4 +21,7 @@ public interface CategoryDao {
 
     @Query("select * from Category")
     public List<Category> getCategories();
+
+    @Query("delete from Category where id = :ids")
+    public void deleteSelectedCategories(List<Integer> ids);
 }

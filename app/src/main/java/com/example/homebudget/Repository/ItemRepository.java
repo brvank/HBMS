@@ -29,4 +29,12 @@ public class ItemRepository {
     public void updateItem(Item item){
         itemDao.updateItem(item);
     }
+
+    public void deleteSelectedItems(List<Integer> ids){
+        itemDao.deletedSelectedItems(ids);
+    }
+
+    public void deleteItemsWithCategoryId(int categoryId){
+        itemDao.deleteItemsWithCategoryId(categoryId);
+    }
 }

@@ -6,7 +6,7 @@ import com.example.homebudget.Util.AppUtil;
 
 import org.junit.Test;
 
-public class util {
+public class UtilTest {
     @Test
     public void monthName(){
         assertEquals(AppUtil.month(1), "january");

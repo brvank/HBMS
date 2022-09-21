@@ -5,7 +5,9 @@ public class RoomDB {
         GET,
         ADD,
         DELETE,
-        UPDATE
+        UPDATE,
+        DELETE_SELECTED,
+        DELETE_FOR_PARENT
     }
 
     public enum DIV{

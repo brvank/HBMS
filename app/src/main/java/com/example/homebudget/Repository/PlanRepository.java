@@ -29,4 +29,8 @@ public class PlanRepository {
     public void updatePlan(Plan plan){
         planDao.updatePlan(plan);
     }
+
+    public void deleteSelectedPlans(List<Integer> ids){
+        planDao.deleteSelectedPlans(ids);
+    }
 }

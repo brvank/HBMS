@@ -24,4 +24,7 @@ public interface ItemDao {
 
     @Query("delete from Item where category_id = :categoryId ")
     public void deleteItemsWithCategoryId(int categoryId);
+
+    @Query("delete from Item where id = :ids")
+    public void deletedSelectedItems(List<Integer> ids);
 }

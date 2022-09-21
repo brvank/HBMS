@@ -21,4 +21,7 @@ public interface PlanDao {
 
     @Query("select * from `Plan`")
     public List<Plan> getPlans();
+
+    @Query("delete from `Plan` where id = :ids")
+    public void deleteSelectedPlans(List<Integer> ids);
 }
