@@ -18,15 +18,20 @@ import androidx.core.view.GravityCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.homebudget.Model.Category;
 import com.example.homebudget.Model.Selection;
 import com.example.homebudget.R;
-import com.example.homebudget.Service.Storage.SharedPreferencesStorage;
+import com.example.homebudget.Repository.RoomDB;
 import com.example.homebudget.Util.AppAlert;
+import com.example.homebudget.Util.Callbacks.AppCallback;
 import com.example.homebudget.Util.AppConstant;
 import com.example.homebudget.Util.AppUtil;
-import com.example.homebudget.View.Dialog.AddDialogFragment;
+import com.example.homebudget.View.Dialog.CategoryDialog;
+import com.example.homebudget.View.Dialog.AddSelectDialog;
+import com.example.homebudget.View.Dialog.MessageDialog;
 import com.example.homebudget.View.FragmentView.DashboardFragment;
 import com.example.homebudget.View.FragmentView.PlansFragment;
+import com.example.homebudget.ViewModel.HomeViewModel;
 import com.example.homebudget.ViewModel.ViewStateViewModel;
 import com.example.homebudget.databinding.ActivityHomeBinding;
 import com.google.android.material.navigation.NavigationView;
@@ -41,9 +46,20 @@ public class HomeActivity extends AppCompatActivity {
     PlansFragment plansFragment;
 
     ViewStateViewModel viewStateViewModel;
+    HomeViewModel homeViewModel;
 
     Bundle savedInstanceState;
     int selectedIndex = 0;
+
+    AppCallback callbackFrgDashboard, callbackFrgPlans;
+
+    public void setProcessCallbackFrgDashboard(AppCallback callback){
+        this.callbackFrgDashboard = callback;
+    }
+
+    public void setProcessCallbackFrgPlans(AppCallback callback){
+        this.callbackFrgPlans = callback;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,61 +80,23 @@ public class HomeActivity extends AppCompatActivity {
     private void initialise(){
         setSupportActionBar(activityHomeBinding.tbDashboard);
 
-        setupViewStateViewModel();
+        setupViewModel();
         setupResultLauncher();
         setupDashboard();
         setupNavigationDrawer();
+
+        activityHomeBinding.fabAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                homeViewModel.getCategories();
+            }
+        });
     }
 
-    private void setupViewStateViewModel(){
+    private void setupViewModel(){
+        //for view state view model
         viewStateViewModel = new ViewModelProvider(HomeActivity.this).get(ViewStateViewModel.class);
 
-        viewStateViewModel.addDashboardShowObserver(HomeActivity.this, new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean b) {
-                activityHomeBinding.frgDashboard.setVisibility(AppUtil.visibility(b));
-            }
-        });
-
-        viewStateViewModel.addPlanShowObserver(HomeActivity.this, new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean b) {
-                activityHomeBinding.frgDashboard.setVisibility(AppUtil.visibility(b));
-            }
-        });
-    }
-
-    private void setupResultLauncher(){
-        settingsActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
-            @Override
-            public void onActivityResult(ActivityResult result) {
-                if(result.getResultCode() == RESULT_OK){
-                    viewStateViewModel.update();
-                    updateFragmentVisibility();
-                }
-            }
-        });
-    }
-
-    private void setupDashboard(){
-        if(savedInstanceState == null){
-            dashboardFragment = new DashboardFragment();
-            plansFragment = new PlansFragment();
-
-            getSupportFragmentManager().beginTransaction().setReorderingAllowed(true)
-                    .add(activityHomeBinding.frgDashboard.getId(), dashboardFragment)
-                    .commit();
-
-            getSupportFragmentManager().beginTransaction().setReorderingAllowed(true)
-                    .add(activityHomeBinding.frgPlans.getId(), plansFragment)
-                    .commit();
-        }
-
-
-        //update fragment visibility
-        updateFragmentVisibility();
-
-        //adding observers
         viewStateViewModel.addDashboardShowObserver(HomeActivity.this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean b) {
@@ -145,6 +123,49 @@ public class HomeActivity extends AppCompatActivity {
                 }
             }
         });
+
+        //for home view model
+        homeViewModel = new ViewModelProvider(HomeActivity.this).get(HomeViewModel.class);
+
+        homeViewModel.addErrorOccurredObserver(HomeActivity.this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean errorStatus) {
+                if(errorStatus){
+                    MessageDialog messageDialog = new MessageDialog(HomeActivity.this, AppConstant.OOPS, AppConstant.SWW);
+                    messageDialog.show(getSupportFragmentManager(), AppConstant.MESSAGE_DIALOG_TAG);
+                    homeViewModel.errorUpdate(false);
+                }
+            }
+        });
+    }
+
+    private void setupResultLauncher(){
+        settingsActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+            @Override
+            public void onActivityResult(ActivityResult result) {
+                if(result.getResultCode() == RESULT_OK){
+                    viewStateViewModel.update();
+                }
+            }
+        });
+    }
+
+    private void setupDashboard(){
+        if(savedInstanceState == null){
+            dashboardFragment = new DashboardFragment();
+            plansFragment = new PlansFragment();
+
+            getSupportFragmentManager().beginTransaction().setReorderingAllowed(true)
+                    .replace(activityHomeBinding.frgDashboard.getId(), dashboardFragment)
+                    .commit();
+
+            getSupportFragmentManager().beginTransaction().setReorderingAllowed(true)
+                    .replace(activityHomeBinding.frgPlans.getId(), plansFragment)
+                    .commit();
+        }
+
+        //update fragment visibility
+        updateFragmentVisibility();
     }
 
     private void updateFragmentVisibility(){
@@ -260,11 +281,11 @@ public class HomeActivity extends AppCompatActivity {
 
         if(dashboardShow && plansShow){
             //show dialog to choose one
-            AddDialogFragment addDialogFragment = new AddDialogFragment(new AddDialogFragment.SelectedResultCallback() {
+            AddSelectDialog addSelectDialog = new AddSelectDialog(HomeActivity.this, false, selectedIndex, new AddSelectDialog.SelectedResultCallback() {
                 @Override
                 public void selected(Selection.Selected selected, int si) {
                     selectedIndex = si;
-                    switch (selected){
+                    switch(selected){
                         case CATEGORY:
                             addCategory();
                             break;
@@ -273,8 +294,8 @@ public class HomeActivity extends AppCompatActivity {
                             break;
                     }
                 }
-            }, selectedIndex);
-            addDialogFragment.show(getSupportFragmentManager(), "ADD");
+            });
+            addSelectDialog.show(getSupportFragmentManager(), AppConstant.SELECTION_DIALOG_TAG);
         }else if(dashboardShow){
             addCategory();
         }else{
@@ -283,11 +304,24 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void addCategory(){
-        AppAlert.toast(HomeActivity.this, "Category add select");
+        CategoryDialog categoryDialog = new CategoryDialog(HomeActivity.this, new CategoryDialog.CategoryDialogCallback() {
+            @Override
+            public void callback(Category category) {
+                if(callbackFrgDashboard != null){
+                    callbackFrgDashboard.update(true);
+                }
+                homeViewModel.query(RoomDB.DIV.CATEGORY, RoomDB.QUERY.ADD, category);
+            }
+        });
+        categoryDialog.show(getSupportFragmentManager(), AppConstant.CATEGORY_DIALOG_TAG);
     }
 
     private void addPlan(){
-        AppAlert.toast(HomeActivity.this, "Plan add select");
+        if(callbackFrgPlans != null){
+            callbackFrgPlans.update(true);
+        }
+
+        //todo: add logic for showing the dialog and adding the plan
     }
 
     @Override
@@ -315,5 +349,10 @@ public class HomeActivity extends AppCompatActivity {
             AppAlert.toast(HomeActivity.this, "HBMS closed");
             super.onBackPressed();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 }

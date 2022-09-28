@@ -45,4 +45,8 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
             this.layoutCategoryBinding = layoutCategoryBinding;
         }
     }
+
+    public void setValues(List<Category> categories){
+        this.categories = categories;
+    }
 }

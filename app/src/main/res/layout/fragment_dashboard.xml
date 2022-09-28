@@ -3,21 +3,38 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="8dp"
-    android:layout_margin="4dp"
+    android:layout_marginHorizontal="4dp"
+    android:layout_marginVertical="2dp"
     android:orientation="vertical"
     android:background="@drawable/background_border"
     tools:context=".View.FragmentView.DashboardFragment">
 
-    <TextView
-        android:text="@string/dashboard"
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/lpiDashboard"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"/>
+        android:layout_height="8dp"
+        android:indeterminate="true"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvCategory"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingHorizontal="8dp"
+        android:paddingBottom="8dp"
+        android:layout_marginTop="2dp">
+
+        <TextView
+            android:id="@+id/tbDashboardTemp"
+            android:text="@string/dashboard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvCategory"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </LinearLayout>
 
 </LinearLayout>

@@ -1,5 +1,7 @@
 package com.example.homebudget.ViewModel;
 
+import android.os.Handler;
+
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
@@ -10,6 +12,7 @@ import com.example.homebudget.Model.Item;
 import com.example.homebudget.Model.Plan;
 import com.example.homebudget.Repository.HomeRepository;
 import com.example.homebudget.Repository.RoomDB;
+import com.example.homebudget.Util.AppConstant;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,42 +24,57 @@ public class HomeViewModel extends ViewModel {
     private final MutableLiveData<List<Item>> itemLiveData;
     private final MutableLiveData<List<Plan>> planLiveData;
 
+    private final MutableLiveData<Boolean> errorOccuredLiveData;
+
     public HomeViewModel(){
         homeRepository = new HomeRepository();
 
         categoryLiveData = new MutableLiveData<>(new ArrayList<>());
         itemLiveData = new MutableLiveData<>(new ArrayList<>());
         planLiveData = new MutableLiveData<>(new ArrayList<>());
+
+        errorOccuredLiveData = new MutableLiveData<>(false);
     }
 
-    public void categoryLiveDataObserve(LifecycleOwner lifecycleOwner, Observer<List<Category>> observer){
+    public void addCategoryLiveDataObserver(LifecycleOwner lifecycleOwner, Observer<List<Category>> observer){
         categoryLiveData.observe(lifecycleOwner, observer);
     }
 
-    public void itemLiveDataObserve(LifecycleOwner lifecycleOwner, Observer<List<Item>> observer){
+    public void addItemLiveDataObserver(LifecycleOwner lifecycleOwner, Observer<List<Item>> observer){
         itemLiveData.observe(lifecycleOwner, observer);
     }
 
-    public void planLiveDataObserve(LifecycleOwner lifecycleOwner, Observer<List<Plan>> observer){
+    public void addPlanLiveDataObserver(LifecycleOwner lifecycleOwner, Observer<List<Plan>> observer){
         planLiveData.observe(lifecycleOwner, observer);
     }
 
-    public void addCategory(Category category){
-        List<Category> list = categoryLiveData.getValue();
-        list.add(category);
-        categoryLiveData.setValue(list);
+    public void addErrorOccurredObserver(LifecycleOwner lifecycleOwner, Observer<Boolean> observer){
+        errorOccuredLiveData.observe(lifecycleOwner, observer);
     }
 
-    public void removeCategory(int i){
-        List<Category> list = getCategories();
-        list.remove(i);
-        categoryLiveData.setValue(list);
+    public void query(RoomDB.DIV d, RoomDB.QUERY q, Object obj){
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String response = queryInBackground(d, q, obj);
+
+                if(!response.isEmpty()){
+                    errorOccuredLiveData.postValue(true);
+                }
+            }
+        });
+
+        thread.start();
+    }
+
+    public void errorUpdate(Boolean status){
+        errorOccuredLiveData.setValue(status);
     }
 
     /**
      * <b>Remember to use this function in a non UI thread.<b1>
     */
-    public String query(RoomDB.DIV d, RoomDB.QUERY q, Object obj){
+    private String queryInBackground(RoomDB.DIV d, RoomDB.QUERY q, Object obj){
         try{
             switch (d){
                 case CATEGORY:
@@ -148,6 +166,7 @@ public class HomeViewModel extends ViewModel {
 
     //util functions for this view model
     public List<Category> getCategories(){
+        categoryLiveData.setValue(homeRepository.categoryRepository.getCategories());
         return categoryLiveData.getValue();
     }
 
@@ -160,6 +179,7 @@ public class HomeViewModel extends ViewModel {
     }
 
     public List<Item> getItems(){
+        itemLiveData.setValue(homeRepository.itemRepository.getItems());
         return itemLiveData.getValue();
     }
 
@@ -172,6 +192,7 @@ public class HomeViewModel extends ViewModel {
     }
 
     public List<Plan> getPlans(){
+        planLiveData.setValue(homeRepository.planRepository.getPlans());
         return planLiveData.getValue();
     }
 

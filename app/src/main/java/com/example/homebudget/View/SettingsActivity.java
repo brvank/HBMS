@@ -4,15 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.RadioGroup;
 
 import com.example.homebudget.R;
 import com.example.homebudget.Service.Storage.SharedPreferencesStorage;
 import com.example.homebudget.Util.AppAlert;
-import com.example.homebudget.Util.AppCallback;
 import com.example.homebudget.Util.AppConstant;
-import com.example.homebudget.Util.AppLog;
 import com.example.homebudget.databinding.ActivitySettingsBinding;
 
 public class SettingsActivity extends AppCompatActivity {

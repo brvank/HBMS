@@ -31,6 +31,7 @@ class RoomRepository {
         if(roomStorage == null){
             roomStorage = Room.databaseBuilder(AppApplication.getContext(), RoomStorage.class, AppConstant.APP_RD)
                     .fallbackToDestructiveMigration()
+                    .allowMainThreadQueries()
                     .build();
         }
         return roomStorage;

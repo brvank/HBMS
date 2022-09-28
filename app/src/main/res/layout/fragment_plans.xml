@@ -3,22 +3,37 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="8dp"
     android:layout_marginHorizontal="4dp"
     android:layout_marginVertical="2dp"
     android:orientation="vertical"
     android:background="@drawable/background_border"
     tools:context=".View.FragmentView.PlansFragment">
 
-    <TextView
-        android:text="@string/plans"
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/lpiPlans"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"/>
+        android:layout_height="8dp"
+        android:indeterminate="true"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvPlan"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingHorizontal="8dp"
+        android:paddingBottom="8dp"
+        android:layout_marginTop="2dp">
+
+        <TextView
+            android:text="@string/plans"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvPlan"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </LinearLayout>
 
 </LinearLayout>

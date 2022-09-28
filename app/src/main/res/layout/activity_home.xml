@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:openDrawer="end"
+    tools:openDrawer="start"
     android:id="@+id/dlDashboard"
     tools:context=".View.HomeActivity">
 
@@ -25,7 +25,8 @@
                 android:layout_marginStart="8dp"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
-                android:src="@drawable/icon_hamburger_menu"/>
+                android:src="@drawable/icon_hamburger_menu"
+                android:contentDescription="@string/menu" />
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/tbDashboard"
@@ -46,26 +47,30 @@
                 android:id="@+id/frgDashboard"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"/>
+                android:layout_weight="1"
+                tools:name="com.example.homebudget.View.FragmentView.DashboardFragment"
+                tools:layout="@layout/fragment_dashboard" />
 
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/frgPlans"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"/>
+                android:layout_weight="1"
+                tools:name="com.example.homebudget.View.FragmentView.PlansFragment"
+                tools:layout="@layout/fragment_plans" />
 
         </LinearLayout>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabAdd"
-            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
             android:layout_margin="16dp"
             android:src="@drawable/icon_add"
-            app:fabSize="auto"/>
+            app:fabSize="auto"
+            android:contentDescription="@string/add" />
 
     </RelativeLayout>
 

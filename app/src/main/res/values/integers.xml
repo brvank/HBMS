@@ -4,4 +4,8 @@
     <!--    animation -->
     <integer name="time_page_transition">200</integer>
 
+    <!--    text length -->
+    <integer name="name_max_length">20</integer>
+    <integer name="info_max_length">40</integer>
+
 </resources>

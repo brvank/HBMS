@@ -12,9 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.core.widget.TextViewCompat;
 
 import com.example.homebudget.R;
-import com.example.homebudget.Util.AppApplication;
-import com.example.homebudget.Util.AppCallback;
-import com.google.android.material.switchmaterial.SwitchMaterial;
+import com.example.homebudget.Util.Callbacks.AppCallback;
 
 public class SettingsItem extends LinearLayout {
     private final TypedArray attributes;
@@ -44,7 +42,7 @@ public class SettingsItem extends LinearLayout {
 
     private void checkBoxCheckedListener(boolean b){
         if(callback != null){
-            callback.run(b);
+            callback.update(b);
         }
         switchTitleVisibility(b);
     }
