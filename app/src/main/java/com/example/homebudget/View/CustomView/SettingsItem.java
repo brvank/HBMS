@@ -12,13 +12,13 @@ import androidx.annotation.Nullable;
 import androidx.core.widget.TextViewCompat;
 
 import com.example.homebudget.R;
-import com.example.homebudget.Util.Callbacks.AppCallback;
+import com.example.homebudget.Util.Callbacks.UpdateCallback;
 
 public class SettingsItem extends LinearLayout {
     private final TypedArray attributes;
     private final TextView tvTitle;
     private final CheckBox cbState;
-    private AppCallback callback;
+    private UpdateCallback callback;
 
     public SettingsItem(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -47,7 +47,7 @@ public class SettingsItem extends LinearLayout {
         switchTitleVisibility(b);
     }
 
-    public void setCallback(AppCallback cb){
+    public void setCallback(UpdateCallback cb){
         this.callback = cb;
     }
 

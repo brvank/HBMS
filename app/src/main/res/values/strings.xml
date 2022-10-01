@@ -7,6 +7,7 @@
 
     <!--    navigation drawer-->
     <string name="home">Home</string>
+    <string name="category">Category</string>
     <string name="dashboard">Dashboard</string>
     <string name="plans">Plans</string>
     <string name="your_database">Your Database</string>

@@ -15,6 +15,9 @@
         android:theme="@style/Theme.HomeBudget"
         tools:targetApi="31">
         <activity
+            android:name=".View.CategoryActivity"
+            android:exported="false" />
+        <activity
             android:name=".View.SettingsActivity"
             android:exported="false" />
         <activity

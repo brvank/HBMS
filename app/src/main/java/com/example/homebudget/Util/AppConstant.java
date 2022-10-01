@@ -13,7 +13,11 @@ public class AppConstant {
     public static String OOPS = "Oops!";
     public static String OK = "OK";
     public static String CANCEL = "CANCEL";
+    public static String DELETE = "DELETE";
     public static String CHOOSE = "Choose";
+    public static String CATEGORY_DELETE_CONFIRMATION = "Are you sure you want to delete this category?";
+    public static String ITEM_DELETE_CONFIRMATION = "Are you sure you want to delete this item?";
+    public static String PLAN_DELETE_CONFIRMATION = "Are you sure you want to delete this plan?";
     public static String SWW = "Something went wrong!";
     public static String DATA_SAVED = "Data successfully saved!";
     public static String DATA_SAVED_ERROR = "Data not saved!";
@@ -48,12 +52,19 @@ public class AppConstant {
     public static String PLAN_DIALOG_TAG = "plan_dialog_tag";
     public static String ITEM_DIALOG_TAG = "item_dialog_tag";
     public static String MESSAGE_DIALOG_TAG = "message_dialog_tag";
+    public static String CONFIRMATION_DIALOG = "confirmation_dialog";
 
     //data
     public static String CATEGORY = "Category";
     public static String PLAN = "Plan";
     public static String ITEM = "Item";
     public static String DASHBOARD = "Dashboard";
+
+    //intent fields
+    public static String NAME = "name";
+    public static String ID = "id";
+    public static String TYPE = "type";
+    public static String INFO = "info";
 
     //logs
     public static String LOG_D = "hb_log_debug: ";

@@ -1,12 +1,17 @@
 package com.example.homebudget.View.FragmentView;
 
+import static android.app.Activity.RESULT_OK;
+
+import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -16,10 +21,15 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.example.homebudget.Model.Category;
+import com.example.homebudget.R;
+import com.example.homebudget.Util.AppAlert;
+import com.example.homebudget.Util.AppConstant;
 import com.example.homebudget.Util.AppLog;
-import com.example.homebudget.Util.Callbacks.AppCallback;
+import com.example.homebudget.Util.Callbacks.CategoryCallback;
+import com.example.homebudget.Util.Callbacks.UpdateCallback;
 import com.example.homebudget.Util.AppUtil;
 import com.example.homebudget.View.Adapter.CategoryAdapter;
+import com.example.homebudget.View.CategoryActivity;
 import com.example.homebudget.View.HomeActivity;
 import com.example.homebudget.ViewModel.HomeViewModel;
 import com.example.homebudget.databinding.FragmentDashboardBinding;
@@ -28,6 +38,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DashboardFragment extends Fragment {
+
+    ActivityResultLauncher<Intent> categoryActivityResultLauncher;
+    CategoryCallback categoryCallback;
 
     FragmentDashboardBinding fragmentDashboardBinding;
 
@@ -59,7 +72,29 @@ public class DashboardFragment extends Fragment {
         homeViewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
 
         //instantiating adapter
-        categoryAdapter = new CategoryAdapter(homeViewModel.getCategories());
+        categoryActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+            @Override
+            public void onActivityResult(ActivityResult result) {
+                if(result.getResultCode() == RESULT_OK){
+                    updateLoadingStatus(true);
+                    homeViewModel.getCategories();
+                }
+            }
+        });
+
+        categoryCallback = new CategoryCallback() {
+            @Override
+            public void callback(Category category) {
+                Intent intent = new Intent(requireActivity(), CategoryActivity.class);
+                intent.putExtra(AppConstant.NAME, category.getName());
+                intent.putExtra(AppConstant.ID, category.getId());
+                intent.putExtra(AppConstant.TYPE, AppConstant.CATEGORY);
+
+                categoryActivityResultLauncher.launch(intent);
+                enterTransition();
+            }
+        };
+        categoryAdapter = new CategoryAdapter(requireActivity(), homeViewModel.getCategories(), categoryCallback);
 
         //setting adapter
         fragmentDashboardBinding.rvCategory.setAdapter(categoryAdapter);
@@ -82,7 +117,7 @@ public class DashboardFragment extends Fragment {
         Class<? extends FragmentActivity> activity = requireActivity().getClass();
 
         if(activity == HomeActivity.class){
-            ((HomeActivity)requireActivity()).setProcessCallbackFrgDashboard(new AppCallback() {
+            ((HomeActivity)requireActivity()).setProcessCallbackFrgDashboard(new UpdateCallback() {
                 @Override
                 public void update(boolean status) {
                     updateLoadingStatus(status);
@@ -100,6 +135,7 @@ public class DashboardFragment extends Fragment {
                 if(position < 0){
                     position = 0;
                 }
+                categoryAdapter.notifyDataSetChanged();
                 fragmentDashboardBinding.rvCategory.smoothScrollToPosition(position);
                 updateLoadingStatus(false);
             }
@@ -108,5 +144,13 @@ public class DashboardFragment extends Fragment {
 
     private void updateLoadingStatus(boolean status){
         fragmentDashboardBinding.lpiDashboard.setVisibility(AppUtil.visibility(status));
+    }
+
+    private void enterTransition(){
+        requireActivity().overridePendingTransition(R.anim.slide_in_left, R.anim.no_anim);
+    }
+
+    private void exitTransition(){
+        requireActivity().overridePendingTransition(R.anim.no_anim, R.anim.slide_out_right);
     }
 }

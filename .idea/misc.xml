@@ -27,6 +27,11 @@
         <entry key="..\:/projects/android_native/HomeBudget/app/src/main/res/menu/drawer_menu.xml" value="0.25" />
         <entry key="..\:/projects/android_native/HomeBudget/app/src/main/res/menu/home_menu.xml" value="0.25" />
         <entry key="..\:/projects/android_native/HomeBudget/app/src/main/res/menu/menu.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/activity_category.xml" value="0.35625" />
+        <entry key="app/src/main/res/layout/activity_home.xml" value="0.35625" />
+        <entry key="app/src/main/res/layout/activity_settings.xml" value="0.35625" />
+        <entry key="app/src/main/res/layout/fragment_dashboard.xml" value="0.35625" />
+        <entry key="app/src/main/res/layout/layout_category.xml" value="0.35625" />
       </map>
     </option>
   </component>

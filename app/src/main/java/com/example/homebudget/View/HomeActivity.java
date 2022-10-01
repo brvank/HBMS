@@ -23,7 +23,7 @@ import com.example.homebudget.Model.Selection;
 import com.example.homebudget.R;
 import com.example.homebudget.Repository.RoomDB;
 import com.example.homebudget.Util.AppAlert;
-import com.example.homebudget.Util.Callbacks.AppCallback;
+import com.example.homebudget.Util.Callbacks.UpdateCallback;
 import com.example.homebudget.Util.AppConstant;
 import com.example.homebudget.Util.AppUtil;
 import com.example.homebudget.View.Dialog.CategoryDialog;
@@ -51,13 +51,13 @@ public class HomeActivity extends AppCompatActivity {
     Bundle savedInstanceState;
     int selectedIndex = 0;
 
-    AppCallback callbackFrgDashboard, callbackFrgPlans;
+    UpdateCallback callbackFrgDashboard, callbackFrgPlans;
 
-    public void setProcessCallbackFrgDashboard(AppCallback callback){
+    public void setProcessCallbackFrgDashboard(UpdateCallback callback){
         this.callbackFrgDashboard = callback;
     }
 
-    public void setProcessCallbackFrgPlans(AppCallback callback){
+    public void setProcessCallbackFrgPlans(UpdateCallback callback){
         this.callbackFrgPlans = callback;
     }
 

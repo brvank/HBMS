@@ -1,5 +1,9 @@
 package com.example.homebudget.View.Adapter;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,15 +12,24 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.homebudget.Model.Category;
+import com.example.homebudget.R;
+import com.example.homebudget.Util.AppConstant;
+import com.example.homebudget.Util.Callbacks.CategoryCallback;
+import com.example.homebudget.View.CategoryActivity;
+import com.example.homebudget.View.FragmentView.DashboardFragment;
 import com.example.homebudget.databinding.LayoutCategoryBinding;
 
 import java.util.List;
 
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHolder>{
     private List<Category> categories;
+    private CategoryCallback categoryCallback;
+    private final Context context;
 
-    public CategoryAdapter(List<Category> categories){
+    public CategoryAdapter(Context context, List<Category> categories, CategoryCallback categoryCallback){
+        this.context = context;
         this.categories = categories;
+        this.categoryCallback = categoryCallback;
     }
 
     @NonNull
@@ -29,8 +42,15 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        final int pos = position;
         holder.layoutCategoryBinding.tvCategoryTitle.setText(categories.get(position).getName());
         holder.layoutCategoryBinding.tvCategoryInfo.setText(categories.get(position).getInfo());
+        holder.layoutCategoryBinding.llParentCategory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                categoryCallback.callback(categories.get(pos));
+            }
+        });
     }
 
     @Override

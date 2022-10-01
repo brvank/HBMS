@@ -55,6 +55,7 @@ public class CategoryDialog extends DialogFragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         if(category != null){
             layoutCategoryAddDialogBinding.etCategoryName.setText(category.getName());
             layoutCategoryAddDialogBinding.etCategoryInfo.setText(category.getInfo());
@@ -122,7 +123,7 @@ public class CategoryDialog extends DialogFragment {
             }
         });
 
-        super.onViewCreated(view, savedInstanceState);
+        layoutCategoryAddDialogBinding.etCategoryName.requestFocus();
     }
 
     private void returnCategoryOnValidate(){

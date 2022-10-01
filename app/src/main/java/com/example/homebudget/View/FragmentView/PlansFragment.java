@@ -14,7 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.example.homebudget.Model.Plan;
-import com.example.homebudget.Util.Callbacks.AppCallback;
+import com.example.homebudget.Util.Callbacks.UpdateCallback;
 import com.example.homebudget.Util.AppUtil;
 import com.example.homebudget.View.Adapter.PlanAdapter;
 import com.example.homebudget.View.HomeActivity;
@@ -80,7 +80,7 @@ public class PlansFragment extends Fragment {
         Class<? extends FragmentActivity> activity = requireActivity().getClass();
 
         if(activity == HomeActivity.class){
-            ((HomeActivity)requireActivity()).setProcessCallbackFrgPlans(new AppCallback() {
+            ((HomeActivity)requireActivity()).setProcessCallbackFrgPlans(new UpdateCallback() {
                 @Override
                 public void update(boolean b) {
                     updateLoadingStatus(b);
