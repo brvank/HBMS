@@ -61,17 +61,6 @@
 
         </LinearLayout>
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabAdd"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:layout_margin="16dp"
-            android:src="@drawable/icon_add"
-            app:fabSize="auto"
-            android:contentDescription="@string/add" />
-
     </RelativeLayout>
 
     <com.google.android.material.navigation.NavigationView

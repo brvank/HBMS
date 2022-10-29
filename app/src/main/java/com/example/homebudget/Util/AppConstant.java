@@ -5,6 +5,7 @@ public class AppConstant {
     public static String APP_RD = "hb_room_database";
     public static String SF = "hb_shared_preferences";
     public static String APP_STORAGE = "hb_local_app_storage";
+    public static String APP_EXT_STORAGE = "hb_external_storage";
     public static String USER_NAME_SF = "user_name";
     public static String DASHBOARD_SHOW_SF = "dashboard_show";
     public static String PLANS_SHOW_SF = "plans_show";
@@ -15,7 +16,7 @@ public class AppConstant {
     public static String CANCEL = "CANCEL";
     public static String DELETE = "DELETE";
     public static String CHOOSE = "Choose";
-    public static String CATEGORY_DELETE_CONFIRMATION = "Are you sure you want to delete this category?";
+    public static String CATEGORY_DELETE_CONFIRMATION = "This will also delete all the previous database related to this category.";
     public static String ITEM_DELETE_CONFIRMATION = "Are you sure you want to delete this item?";
     public static String PLAN_DELETE_CONFIRMATION = "Are you sure you want to delete this plan?";
     public static String SWW = "Something went wrong!";
@@ -25,10 +26,15 @@ public class AppConstant {
     public static String LOGGED_OUT = "You are logged out, please login again!";
     public static String DASHBOARD_PLAN_DISABLE = "You must enable dashboard or plans screen on start up!";
         //text change
+    public static String ADD = "ADD";
+    public static String UDPATE = "UDPATE";
+
     public static int NAME_MAX_LENGTH = 20;
     public static int INFO_MAX_LENGTH = 40;
 
     public static String ZERO_LENGTH_STRING = "";
+
+    public static String ENTER_NON_ZERO_POSITIVE = "Enter non-zero positive value!";
 
     public static String CATEGORY_NAME_REQUIRED = "Category name is required!";
     public static String CATEGORY_INFO_REQUIRED = "Category info is required!";
@@ -89,4 +95,7 @@ public class AppConstant {
                 NOVEMBER = "november",
                 DECEMBER = "december";
     }
+
+    //separator
+    public static String DATE_SEPARATOR = ",";
 }

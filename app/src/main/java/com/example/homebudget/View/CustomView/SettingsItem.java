@@ -23,7 +23,7 @@ public class SettingsItem extends LinearLayout {
     public SettingsItem(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
-        inflate(context, R.layout.settings_item, this);
+        inflate(context, R.layout.layout_settings_item, this);
         attributes = context.obtainStyledAttributes(attrs, R.styleable.SettingsItem);
 
         tvTitle = findViewById(R.id.tvTitle);

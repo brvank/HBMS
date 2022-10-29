@@ -26,8 +26,9 @@
     <string name="recommended">(Recommended)</string>
 
 
-    <!--    home menu-->
+    <!--    menu-->
     <string name="add">ADD</string>
+    <string name="delete">DELETE</string>
 
     <!--    content descriptions-->
     <string name="mark_done">mark done</string>
@@ -39,7 +40,11 @@
     <string name="cancel">CANCEL</string>
     <string name="ok">OK</string>
     <string name="add_category">Add Category</string>
+    <string name="select_or_create">Select from previous or create new</string>
+    <string name="create_new">Create New</string>
     <string name="name">Name</string>
     <string name="short_info">Short Info</string>
+    <string name="current">Current</string>
+    <string name="previous">Previous</string>
 
 </resources>

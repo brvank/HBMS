@@ -19,12 +19,11 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.homebudget.Model.Category;
 import com.example.homebudget.R;
-import com.example.homebudget.Util.AppAlert;
 import com.example.homebudget.Util.AppConstant;
-import com.example.homebudget.Util.AppLog;
 import com.example.homebudget.Util.Callbacks.CategoryCallback;
 import com.example.homebudget.Util.Callbacks.UpdateCallback;
 import com.example.homebudget.Util.AppUtil;
@@ -34,7 +33,6 @@ import com.example.homebudget.View.HomeActivity;
 import com.example.homebudget.ViewModel.HomeViewModel;
 import com.example.homebudget.databinding.FragmentDashboardBinding;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class DashboardFragment extends Fragment {
@@ -102,6 +100,16 @@ public class DashboardFragment extends Fragment {
         //setting layout manager
         GridLayoutManager gridLayoutManager = new GridLayoutManager(requireActivity(), AppUtil.screenInfo(requireActivity().getWindow()).recommendColumns());
         fragmentDashboardBinding.rvCategory.setLayoutManager(gridLayoutManager);
+
+        //setting up the swipe refresh layout
+        fragmentDashboardBinding.srlDashboard.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                fragmentDashboardBinding.srlDashboard.setRefreshing(false);
+                updateLoadingStatus(true);
+                homeViewModel.getCategories();
+            }
+        });
 
         //adding callbacks
         addCallbacks();

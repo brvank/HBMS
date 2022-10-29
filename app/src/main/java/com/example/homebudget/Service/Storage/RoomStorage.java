@@ -1,5 +1,6 @@
 package com.example.homebudget.Service.Storage;
 
+import androidx.room.AutoMigration;
 import androidx.room.Database;
 import androidx.room.RoomDatabase;
 
@@ -10,7 +11,11 @@ import com.example.homebudget.Model.ItemDao;
 import com.example.homebudget.Model.Plan;
 import com.example.homebudget.Model.PlanDao;
 
-@Database(entities = {Category.class, Item.class, Plan.class}, version = 1)
+@Database(
+        entities = {Category.class, Item.class, Plan.class},
+        version = 4,
+        autoMigrations = @AutoMigration(from = 3, to = 4)
+)
 public abstract class RoomStorage extends RoomDatabase {
 
     public abstract CategoryDao categoryDao();

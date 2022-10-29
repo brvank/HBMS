@@ -2,31 +2,31 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/mnDashboard"
+        android:id="@+id/mnDrawerDashboard"
         android:title="@string/dashboard"/>
 
     <item
-        android:id="@+id/mnPlans"
+        android:id="@+id/mnDrawerPlans"
         android:title="@string/plans"/>
 
     <item
-        android:id="@+id/mnYourDatabase"
+        android:id="@+id/mnDrawerYourDatabase"
         android:title="@string/your_database"/>
 
     <item
-        android:id="@+id/mnSettings"
+        android:id="@+id/mnDrawerSettings"
         android:title="@string/settings"/>
 
     <item
-        android:id="@+id/mnAbout"
+        android:id="@+id/mnDrawerAbout"
         android:title="@string/about"/>
 
     <item
-        android:id="@+id/mnShare"
+        android:id="@+id/mnDrawerShare"
         android:title="@string/share"/>
 
     <item
-        android:id="@+id/mnLogout"
+        android:id="@+id/mnDrawerLogout"
         android:title="@string/logout"/>
 
 </menu>

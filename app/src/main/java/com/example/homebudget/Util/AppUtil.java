@@ -4,8 +4,12 @@ import android.content.res.Configuration;
 import android.view.View;
 import android.view.Window;
 
+import com.example.homebudget.Model.DbDate;
 import com.example.homebudget.Model.ScreenInfo;
 
+import java.time.ZonedDateTime;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 
 public class AppUtil {
@@ -42,10 +46,8 @@ public class AppUtil {
 
     public static String firstUpperCase(String str){
         try{
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(str.substring(0,1).toUpperCase());
-            stringBuilder.append(str.substring(1));
-            return stringBuilder.toString();
+            return str.substring(0, 1).toUpperCase() +
+                    str.substring(1).toLowerCase();
         }catch (Exception e){
             e.printStackTrace();
             return str;
@@ -67,5 +69,35 @@ public class AppUtil {
         int height = configuration.screenHeightDp;
 
         return new ScreenInfo(width, height);
+    }
+
+    public static String todayDate(){
+        StringBuilder stringBuilder = new StringBuilder();
+        Calendar calendar = Calendar.getInstance();
+        stringBuilder.append(calendar.get(Calendar.YEAR)).append(AppConstant.DATE_SEPARATOR).append(calendar.get(Calendar.MONTH) + 1);
+        return stringBuilder.toString();
+    }
+
+    public static DbDate dbDateUtil(String dbDateStr){
+        DbDate dbDate = new DbDate();
+        String[] date = dbDateStr.split(AppConstant.DATE_SEPARATOR);
+        dbDate.setYear(Integer.parseInt(date[0]));
+        dbDate.setMonth(Integer.parseInt(date[1]));
+        return dbDate;
+    }
+
+    public static void testPrint(String tag, char decoration, int steps){
+        StringBuilder stringBuilder = new StringBuilder();
+        for(int i=0;i<steps;i++){
+            stringBuilder.append(decoration);
+        }
+
+        stringBuilder.append(tag);
+
+        for(int i=0;i<steps;i++){
+            stringBuilder.append(decoration);
+        }
+
+        System.out.println(stringBuilder);
     }
 }

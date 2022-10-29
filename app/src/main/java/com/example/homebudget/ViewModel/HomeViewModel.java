@@ -1,206 +1,114 @@
 package com.example.homebudget.ViewModel;
 
-import android.os.Handler;
-
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
-import com.example.homebudget.Model.Category;
-import com.example.homebudget.Model.Item;
-import com.example.homebudget.Model.Plan;
-import com.example.homebudget.Repository.HomeRepository;
-import com.example.homebudget.Repository.RoomDB;
+import com.example.homebudget.Service.Storage.SharedPreferencesStorage;
+import com.example.homebudget.Util.AppApplication;
 import com.example.homebudget.Util.AppConstant;
 
-import java.util.ArrayList;
-import java.util.List;
+public class HomeViewModel extends DataViewModel {
+    private final SharedPreferencesStorage sharedPreferencesStorage;
 
-public class HomeViewModel extends ViewModel {
-    private final HomeRepository homeRepository;
-
-    private final MutableLiveData<List<Category>> categoryLiveData;
-    private final MutableLiveData<List<Item>> itemLiveData;
-    private final MutableLiveData<List<Plan>> planLiveData;
-
-    private final MutableLiveData<Boolean> errorOccuredLiveData;
+    private final MutableLiveData<Boolean> dashboardShowLiveData, planShowLiveData;
+    private final MutableLiveData<String> userNameLiveData;
 
     public HomeViewModel(){
-        homeRepository = new HomeRepository();
+        sharedPreferencesStorage = new SharedPreferencesStorage(AppApplication.getContext());
 
-        categoryLiveData = new MutableLiveData<>(new ArrayList<>());
-        itemLiveData = new MutableLiveData<>(new ArrayList<>());
-        planLiveData = new MutableLiveData<>(new ArrayList<>());
+        dashboardShowLiveData = new MutableLiveData<>(dashboardStatus());
+        planShowLiveData = new MutableLiveData<>(planStatus());
+        userNameLiveData = new MutableLiveData<>(userName());
 
-        errorOccuredLiveData = new MutableLiveData<>(false);
+        setViewStates();
     }
 
-    public void addCategoryLiveDataObserver(LifecycleOwner lifecycleOwner, Observer<List<Category>> observer){
-        categoryLiveData.observe(lifecycleOwner, observer);
+    public void addDashboardShowObserver(LifecycleOwner lifecycleOwner, Observer<Boolean> observer){
+        dashboardShowLiveData.observe(lifecycleOwner, observer);
     }
 
-    public void addItemLiveDataObserver(LifecycleOwner lifecycleOwner, Observer<List<Item>> observer){
-        itemLiveData.observe(lifecycleOwner, observer);
+    public void addPlanShowObserver(LifecycleOwner lifecycleOwner, Observer<Boolean> observer){
+        planShowLiveData.observe(lifecycleOwner, observer);
     }
 
-    public void addPlanLiveDataObserver(LifecycleOwner lifecycleOwner, Observer<List<Plan>> observer){
-        planLiveData.observe(lifecycleOwner, observer);
+    public void addUserNameObserver(LifecycleOwner lifecycleOwner, Observer<String> observer){
+        userNameLiveData.observe(lifecycleOwner, observer);
     }
 
-    public void addErrorOccurredObserver(LifecycleOwner lifecycleOwner, Observer<Boolean> observer){
-        errorOccuredLiveData.observe(lifecycleOwner, observer);
-    }
+    private void setViewStates(){
+        boolean d = dashboardStatus();
+        boolean p = planStatus();
 
-    public void query(RoomDB.DIV d, RoomDB.QUERY q, Object obj){
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                String response = queryInBackground(d, q, obj);
-
-                if(!response.isEmpty()){
-                    errorOccuredLiveData.postValue(true);
-                }
-            }
-        });
-
-        thread.start();
-    }
-
-    public void errorUpdate(Boolean status){
-        errorOccuredLiveData.setValue(status);
-    }
-
-    /**
-     * <b>Remember to use this function in a non UI thread.<b1>
-    */
-    private String queryInBackground(RoomDB.DIV d, RoomDB.QUERY q, Object obj){
-        try{
-            switch (d){
-                case CATEGORY:
-                    queryCategory(q, obj);
-                    break;
-                case ITEM:
-                    queryItem(q, obj);
-                    break;
-                case PLANS:
-                    queryPlans(q, obj);
-                    break;
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-            return e.getMessage();
+        if(!(d||p)){
+            setDashboardShow(true);
+            setPlanShow(false);
+        }else{
+            setDashboardShow(d);
+            setPlanShow(p);
         }
-
-        return "";
     }
 
-    private void queryCategory(RoomDB.QUERY q, Object obj){
-        switch (q){
-            case ADD:
-                homeRepository.categoryRepository.addCategory((Category) obj);
-                break;
-            case GET:
-                break;
-            case UPDATE:
-                homeRepository.categoryRepository.updateCategory((Category) obj);
-                break;
-            case DELETE:
-                homeRepository.categoryRepository.deleteCategory((Category) obj);
-                break;
-            case DELETE_SELECTED:
-                homeRepository.categoryRepository.deleteSelectedCategories((List<Integer>) obj);
-                break;
-        }
-
-        List<Category> categories = homeRepository.categoryRepository.getCategories();
-        postCategories(categories);
+    //dashboard
+    public Boolean getDashboardShow(){
+        return dashboardShowLiveData.getValue();
     }
 
-    private void queryItem(RoomDB.QUERY q, Object obj) {
-        switch (q){
-            case ADD:
-                homeRepository.itemRepository.addItem((Item) obj);
-                break;
-            case GET:
-                break;
-            case UPDATE:
-                homeRepository.itemRepository.updateItem((Item) obj);
-                break;
-            case DELETE:
-                homeRepository.itemRepository.deleteItem((Item) obj);
-                break;
-            case DELETE_SELECTED:
-                homeRepository.itemRepository.deleteSelectedItems((List<Integer>) obj);
-                break;
-            case DELETE_FOR_PARENT:
-                homeRepository.itemRepository.deleteItemsWithCategoryId((int) obj);
-                break;
-        }
-
-        List<Item> items = homeRepository.itemRepository.getItems();
-        postItems(items);
+    public void setDashboardShow(Boolean d){
+        sharedPreferencesStorage.setBoolean(AppConstant.DASHBOARD_SHOW_SF, d);
+        dashboardShowLiveData.setValue(d);
     }
 
-    private void queryPlans(RoomDB.QUERY q, Object obj) {
-        switch (q){
-            case ADD:
-                homeRepository.planRepository.addPlan((Plan) obj);
-                break;
-            case GET:
-                break;
-            case UPDATE:
-                homeRepository.planRepository.updatePlan((Plan) obj);
-                break;
-            case DELETE:
-                homeRepository.planRepository.deletePlan((Plan) obj);
-                break;
-            case DELETE_SELECTED:
-                homeRepository.planRepository.deleteSelectedPlans((List<Integer>) obj);
-                break;
-        }
-
-        List<Plan> plans = homeRepository.planRepository.getPlans();
-        postPlans(plans);
+    private Boolean dashboardStatus(){
+        return sharedPreferencesStorage.getBoolean(AppConstant.DASHBOARD_SHOW_SF);
     }
 
-    //util functions for this view model
-    public List<Category> getCategories(){
-        categoryLiveData.setValue(homeRepository.categoryRepository.getCategories());
-        return categoryLiveData.getValue();
+    //plans
+    public Boolean getPlansShow(){
+        return planShowLiveData.getValue();
     }
 
-    private void setCategories(List<Category> categories){
-        categoryLiveData.setValue(categories);
+    public void setPlanShow(Boolean p){
+        sharedPreferencesStorage.setBoolean(AppConstant.PLANS_SHOW_SF, p);
+        planShowLiveData.setValue(p);
     }
 
-    private void postCategories(List<Category> categories){
-        categoryLiveData.postValue(categories);
+    private Boolean planStatus(){
+        return sharedPreferencesStorage.getBoolean(AppConstant.PLANS_SHOW_SF);
     }
 
-    public List<Item> getItems(){
-        itemLiveData.setValue(homeRepository.itemRepository.getItems());
-        return itemLiveData.getValue();
+    //username
+    public String getUserName(){
+        return userNameLiveData.getValue();
     }
 
-    public void setItems(List<Item> items){
-        itemLiveData.setValue(items);
+    public void setUserName(String name){
+        sharedPreferencesStorage.set(AppConstant.USER_NAME_SF, name);
+        userNameLiveData.setValue(name);
     }
 
-    public void postItems(List<Item> items){
-        itemLiveData.postValue(items);
+    private String userName(){
+        return sharedPreferencesStorage.get(AppConstant.USER_NAME_SF);
     }
 
-    public List<Plan> getPlans(){
-        planLiveData.setValue(homeRepository.planRepository.getPlans());
-        return planLiveData.getValue();
+    //update
+    public void update(){
+        dashboardShowLiveData.setValue(dashboardStatus());
+        planShowLiveData.setValue(planStatus());
+        userNameLiveData.setValue(userName());
     }
 
-    public void setPlans(List<Plan> plans){
-        planLiveData.setValue(plans);
-    }
+    //logout
+    public void logout(LifecycleOwner lifecycleOwner){
+        sharedPreferencesStorage.clear();
 
-    public void postPlans(List<Plan> plans){
-        planLiveData.postValue(plans);
+        dashboardShowLiveData.removeObservers(lifecycleOwner);
+        planShowLiveData.removeObservers(lifecycleOwner);
+        userNameLiveData.removeObservers(lifecycleOwner);
+
+        dashboardShowLiveData.setValue(true);
+        planShowLiveData.setValue(true);
+        userNameLiveData.setValue("");
     }
 }

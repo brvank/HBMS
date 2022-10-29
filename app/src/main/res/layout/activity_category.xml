@@ -28,13 +28,6 @@
             android:layout_height="wrap_content"
             app:title="@string/category"/>
 
-        <ImageView
-            android:id="@+id/ivDeleteCategory"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:src="@drawable/icon_delete"
-            android:layout_marginEnd="8dp"/>
-
     </LinearLayout>
 
     <com.google.android.material.progressindicator.LinearProgressIndicator

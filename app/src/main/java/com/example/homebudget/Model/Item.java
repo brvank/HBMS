@@ -2,20 +2,17 @@ package com.example.homebudget.Model;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-@Entity
+@Entity(indices = {@Index(value = {"name"}, unique = true)})
 public class Item {
     @PrimaryKey(autoGenerate = true)
     private int id;
 
-    private String name;
+    private String name, info, extra;
 
-    private String info;
-
-    private int current;
-
-    private int previous;
+    private int current, previous;
 
     @ColumnInfo(name = "category_id")
     private int categoryId;
@@ -26,6 +23,7 @@ public class Item {
         this.current = current;
         this.previous = previous;
         this.categoryId = categoryId;
+        this.extra = "";
     }
 
     public int getId() {
@@ -74,5 +72,13 @@ public class Item {
 
     public void setCategoryId(int categoryId) {
         this.categoryId = categoryId;
+    }
+
+    public String getExtra() {
+        return extra;
+    }
+
+    public void setExtra(String extra) {
+        this.extra = extra;
     }
 }

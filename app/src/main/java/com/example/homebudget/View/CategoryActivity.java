@@ -1,19 +1,26 @@
 package com.example.homebudget.View;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 
-import com.example.homebudget.Model.Category;
+import com.example.homebudget.Model.Item;
 import com.example.homebudget.R;
 import com.example.homebudget.Repository.RoomDB;
 import com.example.homebudget.Util.AppAlert;
 import com.example.homebudget.Util.AppConstant;
+import com.example.homebudget.Util.AppUtil;
 import com.example.homebudget.Util.Callbacks.AppCallback;
 import com.example.homebudget.View.Dialog.ConfirmationDialog;
+import com.example.homebudget.View.Dialog.ItemDialog;
 import com.example.homebudget.ViewModel.HomeViewModel;
 import com.example.homebudget.databinding.ActivityCategoryBinding;
 
@@ -71,21 +78,34 @@ public class CategoryActivity extends AppCompatActivity {
                 closeActivity();
             }
         });
+    }
 
-        activityCategoryBinding.ivDeleteCategory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ConfirmationDialog confirmationDialog = new ConfirmationDialog(CategoryActivity.this, AppConstant.DELETE, AppConstant.CATEGORY_DELETE_CONFIRMATION, new AppCallback() {
+    private void deleteCategory(){
+        ConfirmationDialog confirmationDialog = new ConfirmationDialog(
+                CategoryActivity.this,
+                AppUtil.firstUpperCase(AppConstant.DELETE),
+                AppConstant.CATEGORY_DELETE_CONFIRMATION,
+                new AppCallback() {
                     @Override
                     public void callback() {
                         ArrayList<Integer> ids = new ArrayList<>();
                         ids.add(id);
+                        homeViewModel.query(RoomDB.DIV.ITEM, RoomDB.QUERY.DELETE_FOR_PARENT, id);
                         homeViewModel.query(RoomDB.DIV.CATEGORY, RoomDB.QUERY.DELETE_SELECTED, ids);
                         closeActivity();
                     }
-                });
+        });
 
-                confirmationDialog.show(getSupportFragmentManager(), AppConstant.CATEGORY_DIALOG_TAG);
+        confirmationDialog.show(getSupportFragmentManager(), AppConstant.CATEGORY_DIALOG_TAG);
+    }
+
+    private void addItem(){
+        ItemDialog itemDialog = new ItemDialog(CategoryActivity.this, new ItemDialog.ItemDialogCallback() {
+            @Override
+            public void callback(Item item) {
+                item.setCategoryId(id);
+                //TODO: start loading
+                homeViewModel.query(RoomDB.DIV.ITEM, RoomDB.QUERY.ADD, item);
             }
         });
     }
@@ -102,6 +122,26 @@ public class CategoryActivity extends AppCompatActivity {
 
     private void exitTransition(){
         overridePendingTransition(R.anim.no_anim, R.anim.slide_out_right);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.category_screen_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch(item.getItemId()){
+            case R.id.mnCategoryAdd:
+                addItem();
+                break;
+            case R.id.mnCategoryDelete:
+                deleteCategory();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

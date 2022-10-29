@@ -14,6 +14,7 @@ import androidx.fragment.app.DialogFragment;
 
 import com.example.homebudget.Model.Category;
 import com.example.homebudget.Util.AppConstant;
+import com.example.homebudget.Util.AppUtil;
 import com.example.homebudget.databinding.LayoutCategoryAddDialogBinding;
 
 import java.util.Objects;
@@ -59,6 +60,7 @@ public class CategoryDialog extends DialogFragment {
         if(category != null){
             layoutCategoryAddDialogBinding.etCategoryName.setText(category.getName());
             layoutCategoryAddDialogBinding.etCategoryInfo.setText(category.getInfo());
+            layoutCategoryAddDialogBinding.tvAddButton.setText(AppConstant.UDPATE);
         }
 
         layoutCategoryAddDialogBinding.etCategoryName.addTextChangedListener(new TextWatcher() {
@@ -131,7 +133,7 @@ public class CategoryDialog extends DialogFragment {
             String name = Objects.requireNonNull(layoutCategoryAddDialogBinding.etCategoryName.getText()).toString();
             String info = Objects.requireNonNull(layoutCategoryAddDialogBinding.etCategoryInfo.getText()).toString();
             if(category == null){
-                category = new Category(name, info, "");
+                category = new Category(name, info, AppUtil.todayDate());
             }else{
                 category.setName(name);
                 category.setInfo(info);

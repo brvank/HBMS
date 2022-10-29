@@ -10,12 +10,26 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/add_category"
+        android:text="@string/select_or_create"
         android:textSize="16sp"
         android:layout_marginBottom="8dp"/>
 
+    <CheckBox
+        android:id="@+id/cb_create_new_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/create_new"
+        android:checked="true"/>
+
+    <Spinner
+        android:id="@+id/spnr_items_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:visibility="gone"/>
+
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/til_category_name"
+        android:id="@+id/til_item_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/name"
@@ -24,7 +38,7 @@
         app:errorEnabled="true">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/et_category_name"
+            android:id="@+id/et_item_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:nextFocusDown="@id/et_category_info"
@@ -34,7 +48,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/til_category_info"
+        android:id="@+id/til_item_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/short_info"
@@ -42,13 +56,61 @@
         app:counterMaxLength="@integer/info_max_length">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/et_category_info"
+            android:id="@+id/et_item_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
             android:maxLines="1"/>
 
     </com.google.android.material.textfield.TextInputLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_previous_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="4dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="@string/previous"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textAlignment="center"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="4dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="@string/current"/>
+
+        <EditText
+            android:id="@+id/et_item_current_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="2dp"
+            android:inputType="numberDecimal"
+            android:textAlignment="center"
+            android:hint="- - -"
+            android:background="@drawable/background_border"/>
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -1,20 +1,20 @@
 package com.example.homebudget.Model;
 
 import androidx.room.Entity;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-@Entity
+@Entity(indices = {@Index(value = {"name"}, unique = true)})
 public class Plan {
     @PrimaryKey(autoGenerate = true)
     private int id;
 
-    private String name;
-
-    private String info;
+    private String name, info, extra;
 
     public Plan(String name, String info){
         this.name = name;
         this.info = info;
+        this.extra = "";
     }
 
     public int getId() {
@@ -39,5 +39,13 @@ public class Plan {
 
     public void setInfo(String info) {
         this.info = info;
+    }
+
+    public String getExtra() {
+        return extra;
+    }
+
+    public void setExtra(String extra) {
+        this.extra = extra;
     }
 }

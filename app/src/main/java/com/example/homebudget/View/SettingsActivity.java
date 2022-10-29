@@ -61,7 +61,6 @@ public class SettingsActivity extends AppCompatActivity {
         //toggle view states
         toggleViewsState();
 
-
         //adding callbacks
         activitySettingsBinding.rgShowOnStartup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override

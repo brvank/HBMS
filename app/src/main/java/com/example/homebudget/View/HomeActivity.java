@@ -32,7 +32,6 @@ import com.example.homebudget.View.Dialog.MessageDialog;
 import com.example.homebudget.View.FragmentView.DashboardFragment;
 import com.example.homebudget.View.FragmentView.PlansFragment;
 import com.example.homebudget.ViewModel.HomeViewModel;
-import com.example.homebudget.ViewModel.ViewStateViewModel;
 import com.example.homebudget.databinding.ActivityHomeBinding;
 import com.google.android.material.navigation.NavigationView;
 
@@ -45,7 +44,6 @@ public class HomeActivity extends AppCompatActivity {
     DashboardFragment dashboardFragment;
     PlansFragment plansFragment;
 
-    ViewStateViewModel viewStateViewModel;
     HomeViewModel homeViewModel;
 
     Bundle savedInstanceState;
@@ -84,34 +82,27 @@ public class HomeActivity extends AppCompatActivity {
         setupResultLauncher();
         setupDashboard();
         setupNavigationDrawer();
-
-        activityHomeBinding.fabAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                homeViewModel.getCategories();
-            }
-        });
     }
 
     private void setupViewModel(){
         //for view state view model
-        viewStateViewModel = new ViewModelProvider(HomeActivity.this).get(ViewStateViewModel.class);
+        homeViewModel = new ViewModelProvider(HomeActivity.this).get(HomeViewModel.class);
 
-        viewStateViewModel.addDashboardShowObserver(HomeActivity.this, new Observer<Boolean>() {
+        homeViewModel.addDashboardShowObserver(HomeActivity.this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean b) {
                 activityHomeBinding.frgDashboard.setVisibility(AppUtil.visibility(b));
             }
         });
 
-        viewStateViewModel.addPlanShowObserver(HomeActivity.this, new Observer<Boolean>() {
+        homeViewModel.addPlanShowObserver(HomeActivity.this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean b) {
                 activityHomeBinding.frgPlans.setVisibility(AppUtil.visibility(b));
             }
         });
 
-        viewStateViewModel.addUserNameObserver(HomeActivity.this, new Observer<String>() {
+        homeViewModel.addUserNameObserver(HomeActivity.this, new Observer<String>() {
             @Override
             public void onChanged(String name) {
                 if(name.isEmpty()){
@@ -134,6 +125,8 @@ public class HomeActivity extends AppCompatActivity {
                     MessageDialog messageDialog = new MessageDialog(HomeActivity.this, AppConstant.OOPS, AppConstant.SWW);
                     messageDialog.show(getSupportFragmentManager(), AppConstant.MESSAGE_DIALOG_TAG);
                     homeViewModel.errorUpdate(false);
+                    callbackFrgDashboard.update(false);
+                    callbackFrgPlans.update(false);
                 }
             }
         });
@@ -144,7 +137,7 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onActivityResult(ActivityResult result) {
                 if(result.getResultCode() == RESULT_OK){
-                    viewStateViewModel.update();
+                    homeViewModel.update();
                 }
             }
         });
@@ -169,8 +162,8 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void updateFragmentVisibility(){
-        activityHomeBinding.frgDashboard.setVisibility(AppUtil.visibility(viewStateViewModel.getDashboardShow()));
-        activityHomeBinding.frgPlans.setVisibility(AppUtil.visibility(viewStateViewModel.getPlansShow()));
+        activityHomeBinding.frgDashboard.setVisibility(AppUtil.visibility(homeViewModel.getDashboardShow()));
+        activityHomeBinding.frgPlans.setVisibility(AppUtil.visibility(homeViewModel.getPlansShow()));
     }
 
     private void setupNavigationDrawer(){
@@ -189,7 +182,7 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        String name = viewStateViewModel.getUserName();
+        String name = homeViewModel.getUserName();
 
         if(name.isEmpty()){
             appLogout();
@@ -201,19 +194,19 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void navigationMenuSelected(Integer id){
-        if(id == R.id.mnDashboard){
+        if(id == R.id.mnDrawerDashboard){
             dashboard();
-        } else if(id == R.id.mnPlans){
+        } else if(id == R.id.mnDrawerPlans){
             plans();
-        } else if(id == R.id.mnYourDatabase){
+        } else if(id == R.id.mnDrawerYourDatabase){
             userDatabase();
-        } else if(id == R.id.mnSettings){
+        } else if(id == R.id.mnDrawerSettings){
             settings();
-        } else if(id == R.id.mnAbout){
+        } else if(id == R.id.mnDrawerAbout){
             about();
-        } else if(id == R.id.mnShare){
+        } else if(id == R.id.mnDrawerShare){
             share();
-        } else if(id == R.id.mnLogout){
+        } else if(id == R.id.mnDrawerLogout){
             logout();
         }
     }
@@ -247,7 +240,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void appLogout(){
-        viewStateViewModel.logout(HomeActivity.this);
+        homeViewModel.logout(HomeActivity.this);
         AppAlert.toast(HomeActivity.this, AppConstant.LOGGED_OUT);
         Intent intent = new Intent(HomeActivity.this, SplashActivity.class);
         startActivity(intent);
@@ -276,8 +269,8 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void add(){
-        boolean dashboardShow = viewStateViewModel.getDashboardShow();
-        boolean plansShow = viewStateViewModel.getPlansShow();
+        boolean dashboardShow = homeViewModel.getDashboardShow();
+        boolean plansShow = homeViewModel.getPlansShow();
 
         if(dashboardShow && plansShow){
             //show dialog to choose one
@@ -334,7 +327,7 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
-            case R.id.mnAdd:
+            case R.id.mnHomeAdd:
                 add();
                 break;
         }
