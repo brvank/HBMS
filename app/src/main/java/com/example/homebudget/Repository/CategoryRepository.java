@@ -30,6 +30,10 @@ public class CategoryRepository {
         categoryDao.updateCategory(category);
     }
 
+    public List<Category> getCategoryById(int id){
+        return categoryDao.getCategoryById(id);
+    }
+
     public void deleteSelectedCategories(List<Integer> ids){
         categoryDao.deleteSelectedCategories(ids);
     }

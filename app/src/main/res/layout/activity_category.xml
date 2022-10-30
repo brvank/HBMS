@@ -34,6 +34,7 @@
         android:id="@+id/lpiCategoryPage"
         android:layout_width="match_parent"
         android:visibility="gone"
-        android:layout_height="2dp"/>
+        android:indeterminate="true"
+        android:layout_height="8dp"/>
 
 </LinearLayout>

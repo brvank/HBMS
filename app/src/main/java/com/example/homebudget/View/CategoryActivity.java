@@ -2,6 +2,7 @@ package com.example.homebudget.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
@@ -17,6 +18,7 @@ import com.example.homebudget.R;
 import com.example.homebudget.Repository.RoomDB;
 import com.example.homebudget.Util.AppAlert;
 import com.example.homebudget.Util.AppConstant;
+import com.example.homebudget.Util.AppLog;
 import com.example.homebudget.Util.AppUtil;
 import com.example.homebudget.Util.Callbacks.AppCallback;
 import com.example.homebudget.View.Dialog.ConfirmationDialog;
@@ -30,6 +32,7 @@ public class CategoryActivity extends AppCompatActivity {
 
     HomeViewModel homeViewModel;
     ActivityCategoryBinding activityCategoryBinding;
+    boolean visible = false;
 
     //category fields
     String name, type;
@@ -56,12 +59,35 @@ public class CategoryActivity extends AppCompatActivity {
         type = intent.getStringExtra(AppConstant.TYPE);
 
         if(type.equalsIgnoreCase(AppConstant.CATEGORY)){
-            //TODO: check if the category exist or not
             setUpActionBar();
             setUpViews();
+            validateCategory();
         }else{
             closeActivity();
         }
+    }
+
+    private void validateCategory(){
+        activityCategoryBinding.lpiCategoryPage.setVisibility(View.VISIBLE);
+        homeViewModel.validateCategory(id, new AppCallback() {
+            @Override
+            public void callback() {
+                if(getLifecycle().getCurrentState() == Lifecycle.State.RESUMED) {
+                    activityCategoryBinding.lpiCategoryPage.setVisibility(View.GONE);
+                    visible = true;
+                    invalidateOptionsMenu();
+                    //TODO: call for fetching all the items
+                }
+            }
+        }, new AppCallback() {
+            @Override
+            public void callback() {
+                AppAlert.toast(CategoryActivity.this, "Category doesn't exist!");
+                if(getLifecycle().getCurrentState() == Lifecycle.State.RESUMED){
+                    closeActivity();
+                }
+            }
+        });
     }
 
     private void setUpActionBar(){
@@ -108,6 +134,8 @@ public class CategoryActivity extends AppCompatActivity {
                 homeViewModel.query(RoomDB.DIV.ITEM, RoomDB.QUERY.ADD, item);
             }
         });
+
+        itemDialog.show(getSupportFragmentManager(), AppConstant.ITEM_DIALOG_TAG);
     }
 
     private void closeActivity(){
@@ -128,6 +156,9 @@ public class CategoryActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.category_screen_menu, menu);
+        for(int i=0;i<menu.size();i++){
+            menu.getItem(i).setVisible(visible);
+        }
         return super.onCreateOptionsMenu(menu);
     }
 

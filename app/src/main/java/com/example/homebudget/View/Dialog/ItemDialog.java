@@ -155,7 +155,7 @@ public class ItemDialog extends DialogFragment {
             String name = Objects.requireNonNull(layoutItemAddDialogBinding.etItemName.getText()).toString();
             String info = Objects.requireNonNull(layoutItemAddDialogBinding.etItemInfo.getText()).toString();
             String current = Objects.requireNonNull(layoutItemAddDialogBinding.etItemCurrentValue.getText()).toString();
-            int currentValue = Integer.parseUnsignedInt(current);
+            int currentValue = AppUtil.strToInt(current);
             if(item == null){
                 item = new Item(name, info, currentValue, 0, 0);
             }else{
@@ -173,7 +173,7 @@ public class ItemDialog extends DialogFragment {
         String name = Objects.requireNonNull(layoutItemAddDialogBinding.etItemName.getText()).toString();
         String info = Objects.requireNonNull(layoutItemAddDialogBinding.etItemInfo.getText()).toString();
         String current = Objects.requireNonNull(layoutItemAddDialogBinding.etItemCurrentValue.getText()).toString();
-        int currentValue = Integer.parseUnsignedInt(current);
+        int currentValue = AppUtil.strToInt(current);
         boolean nameFocus = false, infoFocus = false, currentFocus = false;
         if((!name.isEmpty() && name.length() <= nameLimit) && (!info.isEmpty() && info.length() <= nameLimit) && (currentValue > 0)){
             return true;

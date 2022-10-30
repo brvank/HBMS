@@ -1,5 +1,8 @@
 package com.example.homebudget.ViewModel;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
@@ -10,11 +13,14 @@ import com.example.homebudget.Model.Item;
 import com.example.homebudget.Model.Plan;
 import com.example.homebudget.Repository.HomeRepository;
 import com.example.homebudget.Repository.RoomDB;
+import com.example.homebudget.Util.Callbacks.AppCallback;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 abstract class DataViewModel extends ViewModel {
     protected final HomeRepository homeRepository;
@@ -198,5 +204,32 @@ abstract class DataViewModel extends ViewModel {
 
     public void postPlans(List<Plan> plans){
         planLiveData.postValue(plans);
+    }
+
+    //specific queries
+    public void validateCategory(int id, AppCallback success, AppCallback failure){
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                List<Category> categories = homeRepository.categoryRepository.getCategoryById(id);
+                if(!categories.isEmpty()){
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            success.callback();
+                        }
+                    });
+                }else{
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            failure.callback();
+                        }
+                    });
+                }
+            }
+        });
     }
 }

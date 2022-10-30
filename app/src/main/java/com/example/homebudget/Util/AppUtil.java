@@ -11,6 +11,9 @@ import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 public class AppUtil {
     //conversion
@@ -84,6 +87,14 @@ public class AppUtil {
         dbDate.setYear(Integer.parseInt(date[0]));
         dbDate.setMonth(Integer.parseInt(date[1]));
         return dbDate;
+    }
+
+    public static Integer strToInt(String str){
+        try{
+            return Integer.parseUnsignedInt(str);
+        }catch (Exception e){
+            return 0;
+        }
     }
 
     public static void testPrint(String tag, char decoration, int steps){

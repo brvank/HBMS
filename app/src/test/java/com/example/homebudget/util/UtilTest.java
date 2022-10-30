@@ -32,5 +32,11 @@ public class UtilTest {
         assertNull(AppUtil.todayDate());
     }
 
+    @Test
+    public void strToInt(){
+        Integer integer = 1;
+        assertEquals(integer, AppUtil.strToInt("1"));
+    }
+
 
 }
