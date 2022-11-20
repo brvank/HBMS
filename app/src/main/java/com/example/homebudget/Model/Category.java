@@ -6,10 +6,13 @@ import androidx.room.Entity;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 @Entity(indices = {@Index(value = {"name"}, unique = true)})
 public class Category {
     @PrimaryKey(autoGenerate = true)
-    private int id;
+    private Integer id;
 
     private String name, info, extra;
 
@@ -23,11 +26,11 @@ public class Category {
         this.extra = "";
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -61,5 +64,16 @@ public class Category {
 
     public void setExtra(String extra) {
         this.extra = extra;
+    }
+
+    @Override
+    public String toString() {
+        return "Category{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", info='" + info + '\'' +
+                ", extra='" + extra + '\'' +
+                ", dateOfCreation='" + dateOfCreation + '\'' +
+                '}';
     }
 }

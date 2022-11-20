@@ -13,8 +13,8 @@ import com.example.homebudget.Model.PlanDao;
 
 @Database(
         entities = {Category.class, Item.class, Plan.class},
-        version = 4,
-        autoMigrations = @AutoMigration(from = 3, to = 4)
+        version = 5
+//        autoMigrations = @AutoMigration(from = 3, to = 5)
 )
 public abstract class RoomStorage extends RoomDatabase {
 

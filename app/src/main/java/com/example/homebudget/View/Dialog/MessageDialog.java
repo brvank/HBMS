@@ -12,7 +12,7 @@ import androidx.fragment.app.DialogFragment;
 
 import com.example.homebudget.Util.AppConstant;
 
-public class MessageDialog extends DialogFragment {
+public class MessageDialog extends AppDialog {
     private final Context context;
     private final String title;
     private final String message;
@@ -43,11 +43,5 @@ public class MessageDialog extends DialogFragment {
         builder.setCancelable(true);
 
         return builder.create();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        dismiss();
     }
 }

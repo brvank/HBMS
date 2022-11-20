@@ -1,9 +1,5 @@
 package com.example.homebudget.View.Adapter;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,11 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.homebudget.Model.Category;
-import com.example.homebudget.R;
-import com.example.homebudget.Util.AppConstant;
 import com.example.homebudget.Util.Callbacks.CategoryCallback;
-import com.example.homebudget.View.CategoryActivity;
-import com.example.homebudget.View.FragmentView.DashboardFragment;
 import com.example.homebudget.databinding.LayoutCategoryBinding;
 
 import java.util.List;
@@ -24,10 +16,8 @@ import java.util.List;
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHolder>{
     private List<Category> categories;
     private CategoryCallback categoryCallback;
-    private final Context context;
 
-    public CategoryAdapter(Context context, List<Category> categories, CategoryCallback categoryCallback){
-        this.context = context;
+    public CategoryAdapter(List<Category> categories, CategoryCallback categoryCallback){
         this.categories = categories;
         this.categoryCallback = categoryCallback;
     }

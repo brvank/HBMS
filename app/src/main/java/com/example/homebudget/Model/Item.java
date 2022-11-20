@@ -8,16 +8,16 @@ import androidx.room.PrimaryKey;
 @Entity(indices = {@Index(value = {"name"}, unique = true)})
 public class Item {
     @PrimaryKey(autoGenerate = true)
-    private int id;
+    private Integer id;
 
     private String name, info, extra;
 
-    private int current, previous;
+    private Integer current, previous;
 
     @ColumnInfo(name = "category_id")
-    private int categoryId;
+    private Integer categoryId;
 
-    public Item(String name, String info, int current, int previous, int categoryId){
+    public Item(String name, String info, Integer current, Integer previous, Integer categoryId){
         this.name = name;
         this.info = info;
         this.current = current;
@@ -26,11 +26,11 @@ public class Item {
         this.extra = "";
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -50,27 +50,27 @@ public class Item {
         this.info = info;
     }
 
-    public int getCurrent() {
+    public Integer getCurrent() {
         return current;
     }
 
-    public void setCurrent(int current) {
+    public void setCurrent(Integer current) {
         this.current = current;
     }
 
-    public int getPrevious() {
+    public Integer getPrevious() {
         return previous;
     }
 
-    public void setPrevious(int previous) {
+    public void setPrevious(Integer previous) {
         this.previous = previous;
     }
 
-    public int getCategoryId() {
+    public Integer getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(int categoryId) {
+    public void setCategoryId(Integer categoryId) {
         this.categoryId = categoryId;
     }
 

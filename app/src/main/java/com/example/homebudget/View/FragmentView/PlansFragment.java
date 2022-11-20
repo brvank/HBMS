@@ -1,36 +1,44 @@
 package com.example.homebudget.View.FragmentView;
 
+import static android.app.Activity.RESULT_OK;
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.homebudget.Model.Plan;
-import com.example.homebudget.Util.Callbacks.UpdateCallback;
+import com.example.homebudget.R;
 import com.example.homebudget.Util.AppUtil;
+import com.example.homebudget.Util.Callbacks.PlanCallback;
 import com.example.homebudget.View.Adapter.PlanAdapter;
-import com.example.homebudget.View.HomeActivity;
-import com.example.homebudget.ViewModel.HomeViewModel;
+import com.example.homebudget.ViewModel.HomeActivityViewModel;
 import com.example.homebudget.databinding.FragmentPlansBinding;
 
 import java.util.List;
 
-public class PlansFragment extends Fragment {
+public class PlansFragment extends AppFragment {
+
+    ActivityResultLauncher<Intent> planActivityResultLauncher;
+    PlanCallback planCallback;
 
     FragmentPlansBinding fragmentPlansBinding;
 
-    HomeViewModel homeViewModel;
+    HomeActivityViewModel homeActivityViewModel;
 
     PlanAdapter planAdapter;
-    List<Plan> planList;
 
     public PlansFragment() {
         // Required empty public constructor
@@ -53,11 +61,25 @@ public class PlansFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         //instantiating home view model
-        homeViewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
+        homeActivityViewModel = new ViewModelProvider(requireActivity()).get(HomeActivityViewModel.class);
 
         //instantiating adapter
-        planList = homeViewModel.getPlans();
-        planAdapter = new PlanAdapter(planList);
+        planActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+            @Override
+            public void onActivityResult(ActivityResult result) {
+                if(result.getResultCode() == RESULT_OK){
+                    getPlans();
+                }
+            }
+        });
+
+        planCallback = new PlanCallback() {
+            @Override
+            public void callback(Plan plan) {
+                //handle callback
+            }
+        };
+        planAdapter = new PlanAdapter(homeActivityViewModel.getPlans(), planCallback);
 
         //setting adapter
         fragmentPlansBinding.rvPlan.setAdapter(planAdapter);
@@ -66,41 +88,72 @@ public class PlansFragment extends Fragment {
         GridLayoutManager gridLayoutManager = new GridLayoutManager(requireActivity(), AppUtil.screenInfo(requireActivity().getWindow()).recommendColumns());
         fragmentPlansBinding.rvPlan.setLayoutManager(gridLayoutManager);
 
-        //adding callbacks
-        addCallbacks();
+        //setting up the swipe refresh layout
+        fragmentPlansBinding.srlPlans.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                fragmentPlansBinding.srlPlans.setRefreshing(false);
+                getPlans();
+            }
+        });
 
         //adding observers
         addObservers();
 
-        //setting initial view state
-        updateLoadingStatus(false);
+        //getting plans
+        getPlans();
     }
 
-    private void addCallbacks(){
-        Class<? extends FragmentActivity> activity = requireActivity().getClass();
-
-        if(activity == HomeActivity.class){
-            ((HomeActivity)requireActivity()).setProcessCallbackFrgPlans(new UpdateCallback() {
-                @Override
-                public void update(boolean b) {
-                    updateLoadingStatus(b);
-                }
-            });
-        }
-    }
-
-    private void addObservers(){
-        homeViewModel.addPlanLiveDataObserver(requireActivity(), new Observer<List<Plan>>() {
+    private void getPlans(){
+        homeActivityViewModel.queryPlansGet(new Runnable() {
             @Override
-            public void onChanged(List<Plan> plans) {
-                planList = plans;
-                planAdapter.notifyDataSetChanged();
-                updateLoadingStatus(false);
+            public void run() {
+                if(mounted()){
+                    updateLoadingStatus(true);
+                }
+            }
+        }, new Runnable() {
+            @Override
+            public void run() {
+                if(mounted()){
+                    updateLoadingStatus(false);
+                }
+            }
+        }, new Runnable() {
+            @Override
+            public void run() {
+                if(mounted()){
+                    updateLoadingStatus(false);
+                    showMessage(requireActivity(), "sfjio", "foewijf");
+                }
             }
         });
     }
 
-    private void updateLoadingStatus(boolean status){
+    private void addObservers(){
+        homeActivityViewModel.addPlanLiveDataObserver(requireActivity(), new Observer<List<Plan>>() {
+            @Override
+            public void onChanged(List<Plan> plans) {
+                planAdapter.setValues(plans);
+                Integer position = plans.size() - 1;
+                if(position < 0){
+                    position = 0;
+                }
+                planAdapter.notifyDataSetChanged();
+                fragmentPlansBinding.rvPlan.smoothScrollToPosition(position);
+            }
+        });
+    }
+
+    public void updateLoadingStatus(boolean status){
         fragmentPlansBinding.lpiPlans.setVisibility(AppUtil.visibility(status));
+    }
+
+    private void enterTransition(){
+        requireActivity().overridePendingTransition(R.anim.slide_in_left, R.anim.no_anim);
+    }
+
+    private void exitTransition(){
+        requireActivity().overridePendingTransition(R.anim.no_anim, R.anim.slide_out_right);
     }
 }

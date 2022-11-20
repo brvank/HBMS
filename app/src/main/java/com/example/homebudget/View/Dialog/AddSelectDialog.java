@@ -22,7 +22,7 @@ import com.example.homebudget.Util.AppConstant;
  *     private int selected;
  *     private SelectedResultCallback selectedResultCallback;
  */
-public class AddSelectDialog extends DialogFragment {
+public class AddSelectDialog extends AppDialog {
     private Context context;
     private Selection selection;
     private String[] arr;
@@ -43,7 +43,7 @@ public class AddSelectDialog extends DialogFragment {
         this.selectedResultCallback = selectedResultCallback;
 
         this.selection = new Selection();
-        this.arr = new String[]{AppConstant.DASHBOARD, AppConstant.PLAN};
+        this.arr = new String[]{AppConstant.CATEGORY, AppConstant.PLAN};
         this.title = AppConstant.CHOOSE;
         this.positiveText = AppConstant.OK;
         this.negativeText = AppConstant.CANCEL;
@@ -85,11 +85,5 @@ public class AddSelectDialog extends DialogFragment {
         builder.setCancelable(cancelable);
 
         return builder.create();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        dismiss();
     }
 }

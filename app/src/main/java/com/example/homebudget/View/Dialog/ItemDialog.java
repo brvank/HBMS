@@ -15,30 +15,35 @@ import androidx.fragment.app.DialogFragment;
 
 import com.example.homebudget.Model.Item;
 import com.example.homebudget.Util.AppConstant;
+import com.example.homebudget.Util.AppLog;
 import com.example.homebudget.Util.AppUtil;
 import com.example.homebudget.databinding.LayoutItemAddDialogBinding;
 
+import java.util.List;
 import java.util.Objects;
 
-public class ItemDialog extends DialogFragment {
-    private final int nameLimit, infoLimit;
+public class ItemDialog extends AppDialog {
+    private final Integer nameLimit, infoLimit;
     private Context context;
     private Item item;
+    private List<Item> items;
     private ItemDialogCallback itemDialogCallback;
     private LayoutItemAddDialogBinding layoutItemAddDialogBinding;
 
-    public ItemDialog(Context context, ItemDialogCallback itemDialogCallback){
+    public ItemDialog(Context context, List<Item> items, ItemDialogCallback itemDialogCallback){
         this.context = context;
         this.itemDialogCallback = itemDialogCallback;
         this.item = null;
+        this.items = items;
         this.nameLimit = AppConstant.NAME_MAX_LENGTH;
         this.infoLimit = AppConstant.INFO_MAX_LENGTH;
     }
     
-    public ItemDialog(Context context, ItemDialogCallback itemDialogCallback, Item item){
+    public ItemDialog(Context context, List<Item> items, ItemDialogCallback itemDialogCallback, Item item){
         this.context = context;
         this.itemDialogCallback = itemDialogCallback;
         this.item = item;
+        this.items = items;
         this.nameLimit = AppConstant.NAME_MAX_LENGTH;
         this.infoLimit = AppConstant.INFO_MAX_LENGTH;
     }
@@ -65,7 +70,7 @@ public class ItemDialog extends DialogFragment {
             layoutItemAddDialogBinding.cbCreateNewItem.setVisibility(View.GONE);
             layoutItemAddDialogBinding.spnrItemsName.setVisibility(View.GONE);
             layoutItemAddDialogBinding.llPreviousItem.setVisibility(View.VISIBLE);
-            layoutItemAddDialogBinding.tvAddButton.setText(AppConstant.UDPATE);
+            layoutItemAddDialogBinding.tvAddButton.setText(AppConstant.UPDATE);
         }else{
             udpateCreateOptionsView(true);
             layoutItemAddDialogBinding.cbCreateNewItem.setChecked(true);
@@ -206,11 +211,5 @@ public class ItemDialog extends DialogFragment {
             
             return false;
         }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        dismiss();
     }
 }

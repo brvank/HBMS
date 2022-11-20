@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey;
 @Entity(indices = {@Index(value = {"name"}, unique = true)})
 public class Plan {
     @PrimaryKey(autoGenerate = true)
-    private int id;
+    private Integer id;
 
     private String name, info, extra;
 
@@ -17,11 +17,11 @@ public class Plan {
         this.extra = "";
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

@@ -14,8 +14,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -25,24 +23,22 @@ import com.example.homebudget.Model.Category;
 import com.example.homebudget.R;
 import com.example.homebudget.Util.AppConstant;
 import com.example.homebudget.Util.Callbacks.CategoryCallback;
-import com.example.homebudget.Util.Callbacks.UpdateCallback;
 import com.example.homebudget.Util.AppUtil;
 import com.example.homebudget.View.Adapter.CategoryAdapter;
 import com.example.homebudget.View.CategoryActivity;
-import com.example.homebudget.View.HomeActivity;
-import com.example.homebudget.ViewModel.HomeViewModel;
+import com.example.homebudget.ViewModel.HomeActivityViewModel;
 import com.example.homebudget.databinding.FragmentDashboardBinding;
 
 import java.util.List;
 
-public class DashboardFragment extends Fragment {
+public class DashboardFragment extends AppFragment {
 
     ActivityResultLauncher<Intent> categoryActivityResultLauncher;
     CategoryCallback categoryCallback;
 
     FragmentDashboardBinding fragmentDashboardBinding;
 
-    HomeViewModel homeViewModel;
+    HomeActivityViewModel homeActivityViewModel;
 
     CategoryAdapter categoryAdapter;
 
@@ -67,15 +63,14 @@ public class DashboardFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         //instantiating home view model
-        homeViewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
+        homeActivityViewModel = new ViewModelProvider(requireActivity()).get(HomeActivityViewModel.class);
 
         //instantiating adapter
         categoryActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
             @Override
             public void onActivityResult(ActivityResult result) {
                 if(result.getResultCode() == RESULT_OK){
-                    updateLoadingStatus(true);
-                    homeViewModel.getCategories();
+                    getCategories();
                 }
             }
         });
@@ -92,7 +87,7 @@ public class DashboardFragment extends Fragment {
                 enterTransition();
             }
         };
-        categoryAdapter = new CategoryAdapter(requireActivity(), homeViewModel.getCategories(), categoryCallback);
+        categoryAdapter = new CategoryAdapter(homeActivityViewModel.getCategories(), categoryCallback);
 
         //setting adapter
         fragmentDashboardBinding.rvCategory.setAdapter(categoryAdapter);
@@ -106,51 +101,59 @@ public class DashboardFragment extends Fragment {
             @Override
             public void onRefresh() {
                 fragmentDashboardBinding.srlDashboard.setRefreshing(false);
-                updateLoadingStatus(true);
-                homeViewModel.getCategories();
+                getCategories();
             }
         });
-
-        //adding callbacks
-        addCallbacks();
 
         //adding observers
         addObservers();
 
-        //setting initial view state
-        updateLoadingStatus(false);
+        //getting categories
+        getCategories();
     }
 
-    private void addCallbacks(){
-        Class<? extends FragmentActivity> activity = requireActivity().getClass();
-
-        if(activity == HomeActivity.class){
-            ((HomeActivity)requireActivity()).setProcessCallbackFrgDashboard(new UpdateCallback() {
-                @Override
-                public void update(boolean status) {
-                    updateLoadingStatus(status);
+    private void getCategories(){
+        homeActivityViewModel.queryCategoryGet(new Runnable() {
+            @Override
+            public void run() {
+                if(mounted()) {
+                    updateLoadingStatus(true);
                 }
-            });
-        }
+            }
+        }, new Runnable() {
+            @Override
+            public void run() {
+                if(mounted()) {
+                    updateLoadingStatus(false);
+                }
+            }
+        }, new Runnable() {
+            @Override
+            public void run() {
+                if(mounted()){
+                    updateLoadingStatus(false);
+                    showMessage(getActivity(), "Error", "Something went wrong!\nPlease retry!");
+                }
+            }
+        });
     }
 
     private void addObservers(){
-        homeViewModel.addCategoryLiveDataObserver(requireActivity(), new Observer<List<Category>>() {
+        homeActivityViewModel.addCategoryLiveDataObserver(requireActivity(), new Observer<List<Category>>() {
             @Override
             public void onChanged(List<Category> categories) {
                 categoryAdapter.setValues(categories);
-                int position = categories.size() - 1;
+                Integer position = categories.size() - 1;
                 if(position < 0){
                     position = 0;
                 }
                 categoryAdapter.notifyDataSetChanged();
                 fragmentDashboardBinding.rvCategory.smoothScrollToPosition(position);
-                updateLoadingStatus(false);
             }
         });
     }
 
-    private void updateLoadingStatus(boolean status){
+    public void updateLoadingStatus(boolean status){
         fragmentDashboardBinding.lpiDashboard.setVisibility(AppUtil.visibility(status));
     }
 

@@ -19,7 +19,7 @@ import com.example.homebudget.databinding.LayoutCategoryAddDialogBinding;
 
 import java.util.Objects;
 
-public class CategoryDialog extends DialogFragment {
+public class CategoryDialog extends AppDialog {
     private final int nameLimit, infoLimit;
     private final Context context;
     private Category category;
@@ -60,7 +60,7 @@ public class CategoryDialog extends DialogFragment {
         if(category != null){
             layoutCategoryAddDialogBinding.etCategoryName.setText(category.getName());
             layoutCategoryAddDialogBinding.etCategoryInfo.setText(category.getInfo());
-            layoutCategoryAddDialogBinding.tvAddButton.setText(AppConstant.UDPATE);
+            layoutCategoryAddDialogBinding.tvAddButton.setText(AppConstant.UPDATE);
         }
 
         layoutCategoryAddDialogBinding.etCategoryName.addTextChangedListener(new TextWatcher() {
@@ -174,11 +174,5 @@ public class CategoryDialog extends DialogFragment {
             }
             return false;
         }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        dismiss();
     }
 }

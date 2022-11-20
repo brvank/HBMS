@@ -1,9 +1,10 @@
 package com.example.homebudget.View;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,32 +12,36 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 
 import com.example.homebudget.Model.Item;
 import com.example.homebudget.R;
-import com.example.homebudget.Repository.RoomDB;
 import com.example.homebudget.Util.AppAlert;
 import com.example.homebudget.Util.AppConstant;
-import com.example.homebudget.Util.AppLog;
 import com.example.homebudget.Util.AppUtil;
-import com.example.homebudget.Util.Callbacks.AppCallback;
+import com.example.homebudget.View.Adapter.ItemAdapter;
 import com.example.homebudget.View.Dialog.ConfirmationDialog;
 import com.example.homebudget.View.Dialog.ItemDialog;
-import com.example.homebudget.ViewModel.HomeViewModel;
+import com.example.homebudget.ViewModel.CategoryActivityViewModel;
+import com.example.homebudget.ViewModel.HomeActivityViewModel;
 import com.example.homebudget.databinding.ActivityCategoryBinding;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class CategoryActivity extends AppCompatActivity {
+public class CategoryActivity extends AppActivity {
 
-    HomeViewModel homeViewModel;
+    HomeActivityViewModel homeActivityViewModel;
+    CategoryActivityViewModel categoryActivityViewModel;
     ActivityCategoryBinding activityCategoryBinding;
-    boolean visible = false;
+    List<Item> itemList;
+    Runnable runnable;
+    ItemAdapter itemAdapter;
 
     //category fields
     String name, type;
-    int id;
+    Integer id;
+
+    boolean isLoading = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,36 +72,14 @@ public class CategoryActivity extends AppCompatActivity {
         }
     }
 
-    private void validateCategory(){
-        activityCategoryBinding.lpiCategoryPage.setVisibility(View.VISIBLE);
-        homeViewModel.validateCategory(id, new AppCallback() {
-            @Override
-            public void callback() {
-                if(getLifecycle().getCurrentState() == Lifecycle.State.RESUMED) {
-                    activityCategoryBinding.lpiCategoryPage.setVisibility(View.GONE);
-                    visible = true;
-                    invalidateOptionsMenu();
-                    //TODO: call for fetching all the items
-                }
-            }
-        }, new AppCallback() {
-            @Override
-            public void callback() {
-                AppAlert.toast(CategoryActivity.this, "Category doesn't exist!");
-                if(getLifecycle().getCurrentState() == Lifecycle.State.RESUMED){
-                    closeActivity();
-                }
-            }
-        });
-    }
-
     private void setUpActionBar(){
         activityCategoryBinding.tbCategory.setTitle(name);
         setSupportActionBar(activityCategoryBinding.tbCategory);
     }
 
     private void setUpViews(){
-        homeViewModel = new ViewModelProvider(CategoryActivity.this).get(HomeViewModel.class);
+        homeActivityViewModel = new ViewModelProvider(CategoryActivity.this).get(HomeActivityViewModel.class);
+        categoryActivityViewModel = new ViewModelProvider(CategoryActivity.this).get(CategoryActivityViewModel.class);
 
         activityCategoryBinding.ivBackCategory.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,6 +87,87 @@ public class CategoryActivity extends AppCompatActivity {
                 closeActivity();
             }
         });
+
+        itemAdapter = new ItemAdapter(CategoryActivity.this, new ArrayList<>());
+
+        activityCategoryBinding.rvItem.setAdapter(itemAdapter);
+
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(CategoryActivity.this, AppUtil.screenInfo(getWindow()).recommendColumns(AppConstant.CARD_WIDTH * 2));
+        activityCategoryBinding.rvItem.setLayoutManager(gridLayoutManager);
+
+        activityCategoryBinding.srlItem.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                activityCategoryBinding.srlItem.setRefreshing(false);
+                homeActivityViewModel.queryItemsGet(id, new Runnable() {
+                    @Override
+                    public void run() {
+                        updateLoadingStatus(true);
+                    }
+                }, new Runnable() {
+                    @Override
+                    public void run() {
+                        updateLoadingStatus(false);
+                    }
+                }, new Runnable() {
+                    @Override
+                    public void run() {
+                        updateLoadingStatus(false);
+                        showMessage(CategoryActivity.this, "Error", "SOmeting tojwejfs q");
+                    }
+                });
+            }
+        });
+    }
+
+    private void validateCategory(){
+        categoryActivityViewModel.loading.observe(CategoryActivity.this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if(aBoolean){
+                    updateLoadingStatus(true);
+                    homeActivityViewModel.queryValidateCategory(id, new Runnable() {
+                        @Override
+                        public void run() {
+                            if(mounted()) {
+                                updateLoadingStatus(false);
+                                categoryActivityViewModel.loading.postValue(false);
+                            }
+                        }
+                    }, new Runnable() {
+                        @Override
+                        public void run() {
+                            AppAlert.toast(CategoryActivity.this, AppConstant.CATEGORY_DOES_NOT_EXIST);
+                            if(mounted()){
+                                closeActivity();
+                            }
+                        }
+                    });
+                }
+            }
+        });
+
+        //adding item observer
+        homeActivityViewModel.addItemLiveDataObserver(CategoryActivity.this, new Observer<List<Item>>() {
+            @Override
+            public void onChanged(List<Item> items) {
+                itemList = items;
+                itemAdapter.setValues(items);
+                Integer position = items.size() - 1;
+                if(position < 0){
+                    position = 0;
+                }
+                itemAdapter.notifyDataSetChanged();
+                activityCategoryBinding.rvItem.smoothScrollToPosition(position);
+                updateLoadingStatus(false);
+            }
+        });
+    }
+
+    private void updateLoadingStatus(boolean status){
+        isLoading = status;
+        activityCategoryBinding.lpiCategoryPage.setVisibility(AppUtil.visibility(status));
+        invalidateOptionsMenu();
     }
 
     private void deleteCategory(){
@@ -111,14 +175,46 @@ public class CategoryActivity extends AppCompatActivity {
                 CategoryActivity.this,
                 AppUtil.firstUpperCase(AppConstant.DELETE),
                 AppConstant.CATEGORY_DELETE_CONFIRMATION,
-                new AppCallback() {
+                new Runnable() {
                     @Override
-                    public void callback() {
+                    public void run() {
                         ArrayList<Integer> ids = new ArrayList<>();
                         ids.add(id);
-                        homeViewModel.query(RoomDB.DIV.ITEM, RoomDB.QUERY.DELETE_FOR_PARENT, id);
-                        homeViewModel.query(RoomDB.DIV.CATEGORY, RoomDB.QUERY.DELETE_SELECTED, ids);
-                        closeActivity();
+                        homeActivityViewModel.queryItemsDeleteByCategoryId(id, new Runnable() {
+                            @Override
+                            public void run() {
+                                updateLoadingStatus(true);
+                            }
+                        }, new Runnable() {
+                            @Override
+                            public void run() {
+                                updateLoadingStatus(false);
+                                homeActivityViewModel.queryCategoryDeleteSelected(ids, new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        updateLoadingStatus(true);
+                                    }
+                                }, new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        updateLoadingStatus(false);
+                                        closeActivity();
+                                    }
+                                }, new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        updateLoadingStatus(false);
+                                        showMessage(CategoryActivity.this, "sfowiejf", "foweijfwe");
+                                    }
+                                });
+                            }
+                        }, new Runnable() {
+                            @Override
+                            public void run() {
+                                updateLoadingStatus(false);
+                                showMessage(CategoryActivity.this, "sfowiejf", "foweijfwe");
+                            }
+                        });
                     }
         });
 
@@ -126,12 +222,30 @@ public class CategoryActivity extends AppCompatActivity {
     }
 
     private void addItem(){
-        ItemDialog itemDialog = new ItemDialog(CategoryActivity.this, new ItemDialog.ItemDialogCallback() {
+//        LoadingDialog loadingDialog = new LoadingDialog(CategoryActivity.this, AppConstant.PLEASE_WAIT);
+//        loadingDialog.show(getSupportFragmentManager(), AppConstant.LOADING_DIALOG_TAG);
+
+        ItemDialog itemDialog = new ItemDialog(CategoryActivity.this, itemList, new ItemDialog.ItemDialogCallback() {
             @Override
             public void callback(Item item) {
                 item.setCategoryId(id);
-                //TODO: start loading
-                homeViewModel.query(RoomDB.DIV.ITEM, RoomDB.QUERY.ADD, item);
+                homeActivityViewModel.queryItemAdd(item, new Runnable() {
+                    @Override
+                    public void run() {
+                        updateLoadingStatus(true);
+                    }
+                }, new Runnable() {
+                    @Override
+                    public void run() {
+                        updateLoadingStatus(false);
+                    }
+                }, new Runnable() {
+                    @Override
+                    public void run() {
+                        updateLoadingStatus(false);
+                        showMessage(CategoryActivity.this, "sfjosf", "ovasihos");
+                    }
+                });
             }
         });
 
@@ -156,8 +270,8 @@ public class CategoryActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.category_screen_menu, menu);
-        for(int i=0;i<menu.size();i++){
-            menu.getItem(i).setVisible(visible);
+        for(Integer i=0;i<menu.size();i++){
+            menu.getItem(i).setVisible(!isLoading);
         }
         return super.onCreateOptionsMenu(menu);
     }

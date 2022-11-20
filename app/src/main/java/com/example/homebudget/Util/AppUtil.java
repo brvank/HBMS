@@ -7,7 +7,12 @@ import android.view.Window;
 import com.example.homebudget.Model.DbDate;
 import com.example.homebudget.Model.ScreenInfo;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.lang.reflect.Array;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -17,7 +22,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public class AppUtil {
     //conversion
-    public static String month(int i){
+    public static String month(Integer i){
         String month = "";
         if(i==1){
             month = AppConstant.MONTHS.JANUARY;
@@ -58,7 +63,7 @@ public class AppUtil {
     }
 
     //ui
-    public static int visibility(boolean state){
+    public static Integer visibility(boolean state){
         if(state){
             return View.VISIBLE;
         }else{
@@ -68,8 +73,8 @@ public class AppUtil {
 
     public static ScreenInfo screenInfo(Window window){
         Configuration configuration = window.getWindowStyle().getResources().getConfiguration();
-        int width = configuration.screenWidthDp;
-        int height = configuration.screenHeightDp;
+        Integer width = configuration.screenWidthDp;
+        Integer height = configuration.screenHeightDp;
 
         return new ScreenInfo(width, height);
     }
@@ -97,15 +102,24 @@ public class AppUtil {
         }
     }
 
-    public static void testPrint(String tag, char decoration, int steps){
+    public static String stringMultiplier(String string, Integer times){
         StringBuilder stringBuilder = new StringBuilder();
-        for(int i=0;i<steps;i++){
+        for(Integer i=0;i<times;i++){
+            stringBuilder.append(string);
+        }
+
+        return stringBuilder.toString();
+    }
+
+    public static void testPrint(String tag, char decoration, Integer steps){
+        StringBuilder stringBuilder = new StringBuilder();
+        for(Integer i=0;i<steps;i++){
             stringBuilder.append(decoration);
         }
 
         stringBuilder.append(tag);
 
-        for(int i=0;i<steps;i++){
+        for(Integer i=0;i<steps;i++){
             stringBuilder.append(decoration);
         }
 

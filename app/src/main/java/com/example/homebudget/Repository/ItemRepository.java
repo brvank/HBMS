@@ -18,6 +18,10 @@ public class ItemRepository {
         return itemDao.getItems();
     }
 
+    public List<Item> getItemsByCategoryId(Integer id){
+        return itemDao.getItemsByCategoryId(id);
+    }
+
     public void addItem(Item item){
         itemDao.addItem(item);
     }
@@ -34,7 +38,7 @@ public class ItemRepository {
         itemDao.deletedSelectedItems(ids);
     }
 
-    public void deleteItemsWithCategoryId(int categoryId){
+    public void deleteItemsWithCategoryId(Integer categoryId){
         itemDao.deleteItemsWithCategoryId(categoryId);
     }
 }

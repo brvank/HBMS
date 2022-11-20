@@ -11,18 +11,17 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.homebudget.Util.AppConstant;
-import com.example.homebudget.Util.Callbacks.AppCallback;
 
-public class ConfirmationDialog extends DialogFragment {
+public class ConfirmationDialog extends AppDialog {
     private final Context context;
     private final String title, message;
-    private final AppCallback appCallback;
+    private final Runnable runnable;
 
-    public ConfirmationDialog(Context context, String title, String message, AppCallback appCallback){
+    public ConfirmationDialog(Context context, String title, String message, Runnable runnable){
         this.context = context;
         this.title = title;
         this.message = message;
-        this.appCallback = appCallback;
+        this.runnable = runnable;
     }
 
     @NonNull
@@ -36,7 +35,7 @@ public class ConfirmationDialog extends DialogFragment {
         builder.setPositiveButton(AppConstant.DELETE, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                appCallback.callback();
+                runnable.run();
             }
         });
 
@@ -48,11 +47,5 @@ public class ConfirmationDialog extends DialogFragment {
         });
 
         return builder.create();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        dismiss();
     }
 }

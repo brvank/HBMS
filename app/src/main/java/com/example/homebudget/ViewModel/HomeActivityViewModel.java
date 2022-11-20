@@ -3,19 +3,18 @@ package com.example.homebudget.ViewModel;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModel;
 
 import com.example.homebudget.Service.Storage.SharedPreferencesStorage;
 import com.example.homebudget.Util.AppApplication;
 import com.example.homebudget.Util.AppConstant;
 
-public class HomeViewModel extends DataViewModel {
+public class HomeActivityViewModel extends DataViewModel {
     private final SharedPreferencesStorage sharedPreferencesStorage;
 
     private final MutableLiveData<Boolean> dashboardShowLiveData, planShowLiveData;
     private final MutableLiveData<String> userNameLiveData;
 
-    public HomeViewModel(){
+    public HomeActivityViewModel(){
         sharedPreferencesStorage = new SharedPreferencesStorage(AppApplication.getContext());
 
         dashboardShowLiveData = new MutableLiveData<>(dashboardStatus());

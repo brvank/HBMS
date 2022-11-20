@@ -23,7 +23,7 @@ public interface CategoryDao {
     public List<Category> getCategories();
 
     @Query("select * from Category where id = :id")
-    public List<Category> getCategoryById(int id);
+    public List<Category> getCategoryById(Integer id);
 
     @Query("delete from Category where id = :ids")
     public void deleteSelectedCategories(List<Integer> ids);

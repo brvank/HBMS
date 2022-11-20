@@ -13,7 +13,7 @@ import com.example.homebudget.Util.AppApplication;
 import com.example.homebudget.Util.AppConstant;
 import com.example.homebudget.Util.AppLog;
 
-public class SplashActivity extends AppCompatActivity {
+public class SplashActivity extends AppActivity {
 
     private SharedPreferencesStorage sharedPreferencesStorage;
 

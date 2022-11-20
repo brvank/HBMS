@@ -30,7 +30,7 @@ public class CategoryRepository {
         categoryDao.updateCategory(category);
     }
 
-    public List<Category> getCategoryById(int id){
+    public List<Category> getCategoryById(Integer id){
         return categoryDao.getCategoryById(id);
     }
 

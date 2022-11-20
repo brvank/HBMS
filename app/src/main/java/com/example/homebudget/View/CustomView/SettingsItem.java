@@ -12,13 +12,11 @@ import androidx.annotation.Nullable;
 import androidx.core.widget.TextViewCompat;
 
 import com.example.homebudget.R;
-import com.example.homebudget.Util.Callbacks.UpdateCallback;
 
 public class SettingsItem extends LinearLayout {
     private final TypedArray attributes;
     private final TextView tvTitle;
     private final CheckBox cbState;
-    private UpdateCallback callback;
 
     public SettingsItem(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -41,15 +39,15 @@ public class SettingsItem extends LinearLayout {
     }
 
     private void checkBoxCheckedListener(boolean b){
-        if(callback != null){
-            callback.update(b);
-        }
+//        if(callback != null){
+//            callback.update(b);
+//        }
         switchTitleVisibility(b);
     }
 
-    public void setCallback(UpdateCallback cb){
-        this.callback = cb;
-    }
+//    public void setCallback(UpdateCallback cb){
+//        this.callback = cb;
+//    }
 
     public void setToggleState(boolean state){
         cbState.setChecked(state);

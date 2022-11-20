@@ -12,7 +12,7 @@ import com.example.homebudget.Util.AppAlert;
 import com.example.homebudget.Util.AppConstant;
 import com.example.homebudget.databinding.ActivitySettingsBinding;
 
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends AppActivity {
 
     ActivitySettingsBinding activitySettingsBinding;
 

@@ -8,15 +8,18 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.homebudget.Model.Plan;
+import com.example.homebudget.Util.Callbacks.PlanCallback;
 import com.example.homebudget.databinding.LayoutPlanBinding;
 
 import java.util.List;
 
 public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.ViewHolder> {
-    public List<Plan> plans;
+    private List<Plan> plans;
+    private PlanCallback planCallback;
 
-    public PlanAdapter(List<Plan> plans){
+    public PlanAdapter(List<Plan> plans, PlanCallback planCallback){
         this.plans = plans;
+        this.planCallback = planCallback;
     }
 
     @NonNull
@@ -29,8 +32,15 @@ public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        final int pos = position;
         holder.layoutPlanBinding.tvPlanTitle.setText(plans.get(position).getName());
         holder.layoutPlanBinding.tvPlanInfo.setText(plans.get(position).getInfo());
+        holder.layoutPlanBinding.llParentPlan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                planCallback.callback(plans.get(pos));
+            }
+        });
     }
 
     @Override
@@ -39,10 +49,14 @@ public class PlanAdapter extends RecyclerView.Adapter<PlanAdapter.ViewHolder> {
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        LayoutPlanBinding layoutPlanBinding;
+        public LayoutPlanBinding layoutPlanBinding;
         public ViewHolder(@NonNull LayoutPlanBinding layoutPlanBinding) {
             super(layoutPlanBinding.getRoot());
             this.layoutPlanBinding = layoutPlanBinding;
         }
+    }
+
+    public void setValues(List<Plan> plans){
+        this.plans = plans;
     }
 }

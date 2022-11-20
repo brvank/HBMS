@@ -12,7 +12,7 @@ import com.example.homebudget.Util.AppAlert;
 import com.example.homebudget.Util.AppConstant;
 import com.example.homebudget.databinding.ActivityGetInBinding;
 
-public class GetInActivity extends AppCompatActivity {
+public class GetInActivity extends AppActivity {
 
     ActivityGetInBinding activityGetInBinding;
 
@@ -42,7 +42,7 @@ public class GetInActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String name = activityGetInBinding.etEnterName.getText().toString();
                 if(name.isEmpty()){
-                    AppAlert.toast(GetInActivity.this, "Please enter your name first!");
+                    AppAlert.toast(GetInActivity.this, AppConstant.ENTER_YOUR_NAME_FIRST);
                 }else{
                     getIn(name);
                 }

@@ -13,7 +13,6 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -21,21 +20,18 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.homebudget.Model.Category;
 import com.example.homebudget.Model.Selection;
 import com.example.homebudget.R;
-import com.example.homebudget.Repository.RoomDB;
 import com.example.homebudget.Util.AppAlert;
-import com.example.homebudget.Util.Callbacks.UpdateCallback;
 import com.example.homebudget.Util.AppConstant;
 import com.example.homebudget.Util.AppUtil;
 import com.example.homebudget.View.Dialog.CategoryDialog;
 import com.example.homebudget.View.Dialog.AddSelectDialog;
-import com.example.homebudget.View.Dialog.MessageDialog;
 import com.example.homebudget.View.FragmentView.DashboardFragment;
 import com.example.homebudget.View.FragmentView.PlansFragment;
-import com.example.homebudget.ViewModel.HomeViewModel;
+import com.example.homebudget.ViewModel.HomeActivityViewModel;
 import com.example.homebudget.databinding.ActivityHomeBinding;
 import com.google.android.material.navigation.NavigationView;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppActivity {
 
     ActivityHomeBinding activityHomeBinding;
 
@@ -44,20 +40,10 @@ public class HomeActivity extends AppCompatActivity {
     DashboardFragment dashboardFragment;
     PlansFragment plansFragment;
 
-    HomeViewModel homeViewModel;
+    HomeActivityViewModel homeActivityViewModel;
 
     Bundle savedInstanceState;
-    int selectedIndex = 0;
-
-    UpdateCallback callbackFrgDashboard, callbackFrgPlans;
-
-    public void setProcessCallbackFrgDashboard(UpdateCallback callback){
-        this.callbackFrgDashboard = callback;
-    }
-
-    public void setProcessCallbackFrgPlans(UpdateCallback callback){
-        this.callbackFrgPlans = callback;
-    }
+    Integer selectedIndex = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,23 +72,23 @@ public class HomeActivity extends AppCompatActivity {
 
     private void setupViewModel(){
         //for view state view model
-        homeViewModel = new ViewModelProvider(HomeActivity.this).get(HomeViewModel.class);
+        homeActivityViewModel = new ViewModelProvider(HomeActivity.this).get(HomeActivityViewModel.class);
 
-        homeViewModel.addDashboardShowObserver(HomeActivity.this, new Observer<Boolean>() {
+        homeActivityViewModel.addDashboardShowObserver(HomeActivity.this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean b) {
                 activityHomeBinding.frgDashboard.setVisibility(AppUtil.visibility(b));
             }
         });
 
-        homeViewModel.addPlanShowObserver(HomeActivity.this, new Observer<Boolean>() {
+        homeActivityViewModel.addPlanShowObserver(HomeActivity.this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean b) {
                 activityHomeBinding.frgPlans.setVisibility(AppUtil.visibility(b));
             }
         });
 
-        homeViewModel.addUserNameObserver(HomeActivity.this, new Observer<String>() {
+        homeActivityViewModel.addUserNameObserver(HomeActivity.this, new Observer<String>() {
             @Override
             public void onChanged(String name) {
                 if(name.isEmpty()){
@@ -116,20 +102,7 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         //for home view model
-        homeViewModel = new ViewModelProvider(HomeActivity.this).get(HomeViewModel.class);
-
-        homeViewModel.addErrorOccurredObserver(HomeActivity.this, new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean errorStatus) {
-                if(errorStatus){
-                    MessageDialog messageDialog = new MessageDialog(HomeActivity.this, AppConstant.OOPS, AppConstant.SWW);
-                    messageDialog.show(getSupportFragmentManager(), AppConstant.MESSAGE_DIALOG_TAG);
-                    homeViewModel.errorUpdate(false);
-                    callbackFrgDashboard.update(false);
-                    callbackFrgPlans.update(false);
-                }
-            }
-        });
+        homeActivityViewModel = new ViewModelProvider(HomeActivity.this).get(HomeActivityViewModel.class);
     }
 
     private void setupResultLauncher(){
@@ -137,7 +110,7 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onActivityResult(ActivityResult result) {
                 if(result.getResultCode() == RESULT_OK){
-                    homeViewModel.update();
+                    homeActivityViewModel.update();
                 }
             }
         });
@@ -162,8 +135,8 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void updateFragmentVisibility(){
-        activityHomeBinding.frgDashboard.setVisibility(AppUtil.visibility(homeViewModel.getDashboardShow()));
-        activityHomeBinding.frgPlans.setVisibility(AppUtil.visibility(homeViewModel.getPlansShow()));
+        activityHomeBinding.frgDashboard.setVisibility(AppUtil.visibility(homeActivityViewModel.getDashboardShow()));
+        activityHomeBinding.frgPlans.setVisibility(AppUtil.visibility(homeActivityViewModel.getPlansShow()));
     }
 
     private void setupNavigationDrawer(){
@@ -182,7 +155,7 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        String name = homeViewModel.getUserName();
+        String name = homeActivityViewModel.getUserName();
 
         if(name.isEmpty()){
             appLogout();
@@ -240,7 +213,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void appLogout(){
-        homeViewModel.logout(HomeActivity.this);
+        homeActivityViewModel.logout(HomeActivity.this);
         AppAlert.toast(HomeActivity.this, AppConstant.LOGGED_OUT);
         Intent intent = new Intent(HomeActivity.this, SplashActivity.class);
         startActivity(intent);
@@ -269,8 +242,8 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void add(){
-        boolean dashboardShow = homeViewModel.getDashboardShow();
-        boolean plansShow = homeViewModel.getPlansShow();
+        boolean dashboardShow = homeActivityViewModel.getDashboardShow();
+        boolean plansShow = homeActivityViewModel.getPlansShow();
 
         if(dashboardShow && plansShow){
             //show dialog to choose one
@@ -300,19 +273,29 @@ public class HomeActivity extends AppCompatActivity {
         CategoryDialog categoryDialog = new CategoryDialog(HomeActivity.this, new CategoryDialog.CategoryDialogCallback() {
             @Override
             public void callback(Category category) {
-                if(callbackFrgDashboard != null){
-                    callbackFrgDashboard.update(true);
-                }
-                homeViewModel.query(RoomDB.DIV.CATEGORY, RoomDB.QUERY.ADD, category);
+                homeActivityViewModel.queryCategoryAdd(category, new Runnable() {
+                    @Override
+                    public void run() {
+                        dashboardFragment.updateLoadingStatus(true);
+                    }
+                }, new Runnable() {
+                    @Override
+                    public void run() {
+                        dashboardFragment.updateLoadingStatus(false);
+                    }
+                }, new Runnable() {
+                    @Override
+                    public void run() {
+                        dashboardFragment.updateLoadingStatus(false);
+                    }
+                });
             }
         });
         categoryDialog.show(getSupportFragmentManager(), AppConstant.CATEGORY_DIALOG_TAG);
     }
 
     private void addPlan(){
-        if(callbackFrgPlans != null){
-            callbackFrgPlans.update(true);
-        }
+        plansFragment.updateLoadingStatus(true);
 
         //todo: add logic for showing the dialog and adding the plan
     }

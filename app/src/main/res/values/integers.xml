@@ -8,4 +8,9 @@
     <integer name="name_max_length">20</integer>
     <integer name="info_max_length">40</integer>
 
+    <!--    limits -->
+    <integer name="category_limit">10</integer>
+    <integer name="item_limit">30</integer>
+    <integer name="plans_limit">50</integer>
+
 </resources>

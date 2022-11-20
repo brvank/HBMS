@@ -10,12 +10,14 @@ public class AppConstant {
     public static String DASHBOARD_SHOW_SF = "dashboard_show";
     public static String PLANS_SHOW_SF = "plans_show";
 
-    //warnings and alerts
+    //messages, warnings and alerts
     public static String OOPS = "Oops!";
     public static String OK = "OK";
     public static String CANCEL = "CANCEL";
     public static String DELETE = "DELETE";
     public static String CHOOSE = "Choose";
+    public static String PLEASE_WAIT = "Please wait...";
+    public static String LOADING = "Loading...";
     public static String CATEGORY_DELETE_CONFIRMATION = "This will also delete all the previous database related to this category.";
     public static String ITEM_DELETE_CONFIRMATION = "Are you sure you want to delete this item?";
     public static String PLAN_DELETE_CONFIRMATION = "Are you sure you want to delete this plan?";
@@ -25,12 +27,16 @@ public class AppConstant {
     public static String DATA_READ_ERROR = "Data not read from database!";
     public static String LOGGED_OUT = "You are logged out, please login again!";
     public static String DASHBOARD_PLAN_DISABLE = "You must enable dashboard or plans screen on start up!";
-        //text change
-    public static String ADD = "ADD";
-    public static String UDPATE = "UDPATE";
 
-    public static int NAME_MAX_LENGTH = 20;
-    public static int INFO_MAX_LENGTH = 40;
+    //toast
+    public static String ENTER_YOUR_NAME_FIRST = "Please enter your name first!";
+    public static String CATEGORY_DOES_NOT_EXIST = "Category doesn't exist!";
+
+    public static String ADD = "ADD";
+    public static String UPDATE = "UPDATE";
+
+    public static Integer NAME_MAX_LENGTH = 20;
+    public static Integer INFO_MAX_LENGTH = 40;
 
     public static String ZERO_LENGTH_STRING = "";
 
@@ -53,6 +59,7 @@ public class AppConstant {
 
 
     //tags for dialogs
+    public static String LOADING_DIALOG_TAG = "loading_dialog_tag";
     public static String SELECTION_DIALOG_TAG = "selection_dialog_tag";
     public static String CATEGORY_DIALOG_TAG = "category_dialog_tag";
     public static String PLAN_DIALOG_TAG = "plan_dialog_tag";
@@ -77,7 +84,7 @@ public class AppConstant {
     public static String LOG_E = "hb_log_error: ";
 
     //dimensions
-    public static int CARD_WIDTH = 128;
+    public static Integer CARD_WIDTH = 128;
 
     //months
     public static class MONTHS{
