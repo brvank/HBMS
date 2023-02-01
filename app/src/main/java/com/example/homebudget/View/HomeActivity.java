@@ -270,25 +270,37 @@ public class HomeActivity extends AppActivity {
     }
 
     private void addCategory(){
+        Runnable onPreExecute = new Runnable() {
+            @Override
+            public void run() {
+                if(mounted()){
+                    dashboardFragment.updateLoadingStatus(true);
+                }
+            }
+        };
+
+        Runnable onSuccess = new Runnable() {
+            @Override
+            public void run() {
+                if(mounted()){
+                    dashboardFragment.updateLoadingStatus(false);
+                }
+            }
+        };
+
+        Runnable onError = new Runnable() {
+            @Override
+            public void run() {
+                if(mounted()){
+                    dashboardFragment.updateLoadingStatus(false);
+                }
+            }
+        };
+
         CategoryDialog categoryDialog = new CategoryDialog(HomeActivity.this, new CategoryDialog.CategoryDialogCallback() {
             @Override
             public void callback(Category category) {
-                homeActivityViewModel.queryCategoryAdd(category, new Runnable() {
-                    @Override
-                    public void run() {
-                        dashboardFragment.updateLoadingStatus(true);
-                    }
-                }, new Runnable() {
-                    @Override
-                    public void run() {
-                        dashboardFragment.updateLoadingStatus(false);
-                    }
-                }, new Runnable() {
-                    @Override
-                    public void run() {
-                        dashboardFragment.updateLoadingStatus(false);
-                    }
-                });
+                homeActivityViewModel.queryCategoryAdd(category, onPreExecute, onSuccess, onError);
             }
         });
         categoryDialog.show(getSupportFragmentManager(), AppConstant.CATEGORY_DIALOG_TAG);
@@ -330,5 +342,10 @@ public class HomeActivity extends AppActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    public void setLoading(boolean status) {
+
     }
 }

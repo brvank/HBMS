@@ -126,4 +126,9 @@ public class SettingsActivity extends AppActivity {
     public void onBackPressed() {
         closeActivity();
     }
+
+    @Override
+    public void setLoading(boolean status) {
+        //not needed
+    }
 }

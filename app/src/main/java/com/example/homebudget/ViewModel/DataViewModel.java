@@ -113,20 +113,23 @@ abstract class DataViewModel extends ViewModel {
     }
 
     //validate category(specific query)
-    public void queryValidateCategory(int id, Runnable success, Runnable failure){
+    public void queryValidateCategory(int id, Runnable onPreExecute, Runnable onSuccess, Runnable onFailure){
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
         executorService.execute(new Runnable() {
             @Override
             public void run() {
+                if(onPreExecute != null){
+                    handler.post(onPreExecute);
+                }
                 itemLiveData.postValue(new ArrayList<>());
                 List<Category> categories = homeRepository.categoryRepository.getCategoryById(id);
                 if(!categories.isEmpty()){
                     //fetching the list of items associated with the category
                     itemLiveData.postValue(homeRepository.itemRepository.getItemsByCategoryId(id));
-                    handler.post(success);
+                    if(onSuccess != null) handler.post(onSuccess);
                 }else{
-                    handler.post(failure);
+                    if(onFailure != null) handler.post(onFailure);
                 }
             }
         });

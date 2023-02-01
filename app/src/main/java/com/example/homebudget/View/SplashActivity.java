@@ -60,4 +60,9 @@ public class SplashActivity extends AppActivity {
     private void enterTransition(){
         overridePendingTransition(R.anim.slide_in_left, R.anim.no_anim);
     }
+
+    @Override
+    public void setLoading(boolean status) {
+        //not needed
+    }
 }

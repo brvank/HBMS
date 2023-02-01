@@ -132,7 +132,7 @@ public class DashboardFragment extends AppFragment {
             public void run() {
                 if(mounted()){
                     updateLoadingStatus(false);
-                    showMessage(getActivity(), "Error", "Something went wrong!\nPlease retry!");
+                    showMessage(getActivity(), AppConstant.OOPS, AppConstant.TRY_LATER);
                 }
             }
         });

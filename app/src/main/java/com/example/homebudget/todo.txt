@@ -1,0 +1,4 @@
+//to add mounted in all the async tasks -> added the mounted function to handle
+//to add all the state flags inside view models -> handled with the below one
+//to centralise the loading behaviour of each activity or fragment -> added a setLoading(boolean) function for it and for the above task
+//TODO: to keep all UI data in the view model

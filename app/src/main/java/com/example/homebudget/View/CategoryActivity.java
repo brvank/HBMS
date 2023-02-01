@@ -17,6 +17,7 @@ import com.example.homebudget.Model.Item;
 import com.example.homebudget.R;
 import com.example.homebudget.Util.AppAlert;
 import com.example.homebudget.Util.AppConstant;
+import com.example.homebudget.Util.AppLog;
 import com.example.homebudget.Util.AppUtil;
 import com.example.homebudget.View.Adapter.ItemAdapter;
 import com.example.homebudget.View.Dialog.ConfirmationDialog;
@@ -34,14 +35,13 @@ public class CategoryActivity extends AppActivity {
     CategoryActivityViewModel categoryActivityViewModel;
     ActivityCategoryBinding activityCategoryBinding;
     List<Item> itemList;
-    Runnable runnable;
     ItemAdapter itemAdapter;
 
     //category fields
     String name, type;
     Integer id;
 
-    boolean isLoading = true;
+    Boolean isLoading = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +66,7 @@ public class CategoryActivity extends AppActivity {
         if(type.equalsIgnoreCase(AppConstant.CATEGORY)){
             setUpActionBar();
             setUpViews();
-            validateCategory();
+            addObservers();
         }else{
             closeActivity();
         }
@@ -99,51 +99,38 @@ public class CategoryActivity extends AppActivity {
             @Override
             public void onRefresh() {
                 activityCategoryBinding.srlItem.setRefreshing(false);
-                homeActivityViewModel.queryItemsGet(id, new Runnable() {
-                    @Override
-                    public void run() {
+
+                Runnable onPreExecute = () -> {
+                    if(mounted()){
                         updateLoadingStatus(true);
                     }
-                }, new Runnable() {
-                    @Override
-                    public void run() {
+                };
+
+                Runnable onSuccess = () -> {
+                    if(mounted()){
                         updateLoadingStatus(false);
                     }
-                }, new Runnable() {
-                    @Override
-                    public void run() {
+                };
+
+                Runnable onError = () -> {
+                    if(mounted()){
                         updateLoadingStatus(false);
-                        showMessage(CategoryActivity.this, "Error", "SOmeting tojwejfs q");
+                        showMessage(CategoryActivity.this, AppConstant.OOPS, AppConstant.TRY_LATER);
                     }
-                });
+                };
+                AppLog.d(String.valueOf(id));
+                homeActivityViewModel.queryItemsGet(id, onPreExecute, onSuccess, onError);
             }
         });
     }
 
-    private void validateCategory(){
+    private void addObservers(){
         categoryActivityViewModel.loading.observe(CategoryActivity.this, new Observer<Boolean>() {
             @Override
-            public void onChanged(Boolean aBoolean) {
-                if(aBoolean){
-                    updateLoadingStatus(true);
-                    homeActivityViewModel.queryValidateCategory(id, new Runnable() {
-                        @Override
-                        public void run() {
-                            if(mounted()) {
-                                updateLoadingStatus(false);
-                                categoryActivityViewModel.loading.postValue(false);
-                            }
-                        }
-                    }, new Runnable() {
-                        @Override
-                        public void run() {
-                            AppAlert.toast(CategoryActivity.this, AppConstant.CATEGORY_DOES_NOT_EXIST);
-                            if(mounted()){
-                                closeActivity();
-                            }
-                        }
-                    });
-                }
+            public void onChanged(Boolean status) {
+                isLoading = status;
+                activityCategoryBinding.lpiCategoryPage.setVisibility(AppUtil.visibility(status));
+                invalidateOptionsMenu();
             }
         });
 
@@ -164,10 +151,8 @@ public class CategoryActivity extends AppActivity {
         });
     }
 
-    private void updateLoadingStatus(boolean status){
-        isLoading = status;
-        activityCategoryBinding.lpiCategoryPage.setVisibility(AppUtil.visibility(status));
-        invalidateOptionsMenu();
+    private void updateLoadingStatus(Boolean status){
+        categoryActivityViewModel.loading.setValue(status);
     }
 
     private void deleteCategory(){
@@ -204,7 +189,7 @@ public class CategoryActivity extends AppActivity {
                                     @Override
                                     public void run() {
                                         updateLoadingStatus(false);
-                                        showMessage(CategoryActivity.this, "sfowiejf", "foweijfwe");
+                                        showMessage(CategoryActivity.this, AppConstant.OOPS, AppConstant.TRY_LATER);
                                     }
                                 });
                             }
@@ -212,7 +197,7 @@ public class CategoryActivity extends AppActivity {
                             @Override
                             public void run() {
                                 updateLoadingStatus(false);
-                                showMessage(CategoryActivity.this, "sfowiejf", "foweijfwe");
+                                showMessage(CategoryActivity.this, AppConstant.OOPS, AppConstant.TRY_LATER);
                             }
                         });
                     }
@@ -222,8 +207,6 @@ public class CategoryActivity extends AppActivity {
     }
 
     private void addItem(){
-//        LoadingDialog loadingDialog = new LoadingDialog(CategoryActivity.this, AppConstant.PLEASE_WAIT);
-//        loadingDialog.show(getSupportFragmentManager(), AppConstant.LOADING_DIALOG_TAG);
 
         ItemDialog itemDialog = new ItemDialog(CategoryActivity.this, itemList, new ItemDialog.ItemDialogCallback() {
             @Override
@@ -243,7 +226,7 @@ public class CategoryActivity extends AppActivity {
                     @Override
                     public void run() {
                         updateLoadingStatus(false);
-                        showMessage(CategoryActivity.this, "sfjosf", "ovasihos");
+                        showMessage(CategoryActivity.this, AppConstant.OOPS, AppConstant.TRY_LATER);
                     }
                 });
             }
@@ -270,7 +253,7 @@ public class CategoryActivity extends AppActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.category_screen_menu, menu);
-        for(Integer i=0;i<menu.size();i++){
+        for(int i = 0; i<menu.size(); i++){
             menu.getItem(i).setVisible(!isLoading);
         }
         return super.onCreateOptionsMenu(menu);
@@ -292,5 +275,10 @@ public class CategoryActivity extends AppActivity {
     @Override
     public void onBackPressed() {
         closeActivity();
+    }
+
+    @Override
+    public void setLoading(boolean status) {
+
     }
 }

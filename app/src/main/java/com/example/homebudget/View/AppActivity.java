@@ -18,4 +18,6 @@ public abstract class AppActivity extends AppCompatActivity {
         MessageDialog messageDialog = new MessageDialog(context, title, message);
         messageDialog.show(getSupportFragmentManager(), AppConstant.MESSAGE_DIALOG_TAG);
     }
+
+    public abstract void setLoading(boolean status);
 }

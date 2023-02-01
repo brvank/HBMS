@@ -21,6 +21,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.homebudget.Model.Plan;
 import com.example.homebudget.R;
+import com.example.homebudget.Util.AppConstant;
 import com.example.homebudget.Util.AppUtil;
 import com.example.homebudget.Util.Callbacks.PlanCallback;
 import com.example.homebudget.View.Adapter.PlanAdapter;
@@ -124,7 +125,7 @@ public class PlansFragment extends AppFragment {
             public void run() {
                 if(mounted()){
                     updateLoadingStatus(false);
-                    showMessage(requireActivity(), "sfjio", "foewijf");
+                    showMessage(requireActivity(), AppConstant.OOPS, AppConstant.TRY_LATER);
                 }
             }
         });

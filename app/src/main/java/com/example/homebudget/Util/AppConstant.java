@@ -27,6 +27,7 @@ public class AppConstant {
     public static String DATA_READ_ERROR = "Data not read from database!";
     public static String LOGGED_OUT = "You are logged out, please login again!";
     public static String DASHBOARD_PLAN_DISABLE = "You must enable dashboard or plans screen on start up!";
+    public static String TRY_LATER = "Error occurred ... Please try later!";
 
     //toast
     public static String ENTER_YOUR_NAME_FIRST = "Please enter your name first!";

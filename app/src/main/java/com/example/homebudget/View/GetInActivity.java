@@ -79,4 +79,9 @@ public class GetInActivity extends AppActivity {
     private void exitTransition(){
         overridePendingTransition(R.anim.no_anim, R.anim.slide_out_right);
     }
+
+    @Override
+    public void setLoading(boolean status) {
+        //not needed
+    }
 }
