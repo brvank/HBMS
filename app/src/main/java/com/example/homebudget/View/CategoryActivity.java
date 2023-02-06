@@ -15,6 +15,7 @@ import android.view.View;
 
 import com.example.homebudget.Model.Item;
 import com.example.homebudget.R;
+import com.example.homebudget.Service.Job.AsyncTaskParameter;
 import com.example.homebudget.Util.AppAlert;
 import com.example.homebudget.Util.AppConstant;
 import com.example.homebudget.Util.AppLog;
@@ -31,7 +32,6 @@ import java.util.List;
 
 public class CategoryActivity extends AppActivity {
 
-    HomeActivityViewModel homeActivityViewModel;
     CategoryActivityViewModel categoryActivityViewModel;
     ActivityCategoryBinding activityCategoryBinding;
     List<Item> itemList;
@@ -78,7 +78,6 @@ public class CategoryActivity extends AppActivity {
     }
 
     private void setUpViews(){
-        homeActivityViewModel = new ViewModelProvider(CategoryActivity.this).get(HomeActivityViewModel.class);
         categoryActivityViewModel = new ViewModelProvider(CategoryActivity.this).get(CategoryActivityViewModel.class);
 
         activityCategoryBinding.ivBackCategory.setOnClickListener(new View.OnClickListener() {
@@ -100,26 +99,7 @@ public class CategoryActivity extends AppActivity {
             public void onRefresh() {
                 activityCategoryBinding.srlItem.setRefreshing(false);
 
-                Runnable onPreExecute = () -> {
-                    if(mounted()){
-                        updateLoadingStatus(true);
-                    }
-                };
-
-                Runnable onSuccess = () -> {
-                    if(mounted()){
-                        updateLoadingStatus(false);
-                    }
-                };
-
-                Runnable onError = () -> {
-                    if(mounted()){
-                        updateLoadingStatus(false);
-                        showMessage(CategoryActivity.this, AppConstant.OOPS, AppConstant.TRY_LATER);
-                    }
-                };
-                AppLog.d(String.valueOf(id));
-                homeActivityViewModel.queryItemsGet(id, onPreExecute, onSuccess, onError);
+                getItems();
             }
         });
     }
@@ -135,12 +115,12 @@ public class CategoryActivity extends AppActivity {
         });
 
         //adding item observer
-        homeActivityViewModel.addItemLiveDataObserver(CategoryActivity.this, new Observer<List<Item>>() {
+        categoryActivityViewModel.addItemLiveDataObserver(CategoryActivity.this, new Observer<List<Item>>() {
             @Override
             public void onChanged(List<Item> items) {
                 itemList = items;
                 itemAdapter.setValues(items);
-                Integer position = items.size() - 1;
+                int position = items.size() - 1;
                 if(position < 0){
                     position = 0;
                 }
@@ -149,10 +129,41 @@ public class CategoryActivity extends AppActivity {
                 updateLoadingStatus(false);
             }
         });
+
+        getItems();
+    }
+
+    private void getItems(){
+        AsyncTaskParameter asyncTaskParameter = new AsyncTaskParameter.Builder()
+                .setOnPreExecute(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateLoadingStatus(true);
+                    }
+                })
+                .setOnSuccess(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateLoadingStatus(false);
+                    }
+                })
+                .setOnError(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateLoadingStatus(false);
+                        showMessage(CategoryActivity.this, AppConstant.OOPS, AppConstant.TRY_LATER);
+                    }
+                })
+                .build();
+
+        //fetching the data
+        categoryActivityViewModel.queryItemsGet(id, asyncTaskParameter);
     }
 
     private void updateLoadingStatus(Boolean status){
-        categoryActivityViewModel.loading.setValue(status);
+        if(mounted()) {
+            categoryActivityViewModel.loading.setValue(status);
+        }
     }
 
     private void deleteCategory(){
@@ -165,41 +176,60 @@ public class CategoryActivity extends AppActivity {
                     public void run() {
                         ArrayList<Integer> ids = new ArrayList<>();
                         ids.add(id);
-                        homeActivityViewModel.queryItemsDeleteByCategoryId(id, new Runnable() {
+                        AsyncTaskParameter.Builder builder = new AsyncTaskParameter.Builder();
+                        builder.setOnPreExecute(new Runnable() {
                             @Override
                             public void run() {
-                                updateLoadingStatus(true);
-                            }
-                        }, new Runnable() {
-                            @Override
-                            public void run() {
-                                updateLoadingStatus(false);
-                                homeActivityViewModel.queryCategoryDeleteSelected(ids, new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        updateLoadingStatus(true);
-                                    }
-                                }, new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        updateLoadingStatus(false);
-                                        closeActivity();
-                                    }
-                                }, new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        updateLoadingStatus(false);
-                                        showMessage(CategoryActivity.this, AppConstant.OOPS, AppConstant.TRY_LATER);
-                                    }
-                                });
-                            }
-                        }, new Runnable() {
-                            @Override
-                            public void run() {
-                                updateLoadingStatus(false);
-                                showMessage(CategoryActivity.this, AppConstant.OOPS, AppConstant.TRY_LATER);
+                                if(mounted()){
+                                    updateLoadingStatus(true);
+                                }
                             }
                         });
+                        builder.setOnSuccess(new Runnable() {
+                            @Override
+                            public void run() {
+                                if(mounted()){
+                                    updateLoadingStatus(false);
+                                    AsyncTaskParameter.Builder temp = new AsyncTaskParameter.Builder();
+                                    temp.setOnPreExecute(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if(mounted()){
+                                                updateLoadingStatus(true);
+                                            }
+                                        }
+                                    });
+                                    temp.setOnSuccess(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if(mounted()){
+                                                updateLoadingStatus(false);
+                                            }
+                                        }
+                                    });
+                                    temp.setOnError(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if(mounted()){
+                                                updateLoadingStatus(false);
+                                                showMessage(CategoryActivity.this, AppConstant.OOPS, AppConstant.TRY_LATER);
+                                            }
+                                        }
+                                    });
+                                    categoryActivityViewModel.queryCategoryDeleteSelected(ids, temp.build());
+                                }
+                            }
+                        });
+                        builder.setOnError(new Runnable() {
+                            @Override
+                            public void run() {
+                                if(mounted()){
+                                    updateLoadingStatus(false);
+                                    showMessage(CategoryActivity.this, AppConstant.OOPS, AppConstant.TRY_LATER);
+                                }
+                            }
+                        });
+                        categoryActivityViewModel.queryItemsDeleteByCategoryId(id, builder.build());
                     }
         });
 
@@ -212,23 +242,33 @@ public class CategoryActivity extends AppActivity {
             @Override
             public void callback(Item item) {
                 item.setCategoryId(id);
-                homeActivityViewModel.queryItemAdd(item, new Runnable() {
+                AsyncTaskParameter.Builder builder = new AsyncTaskParameter.Builder();
+                builder.setOnPreExecute(new Runnable() {
                     @Override
                     public void run() {
-                        updateLoadingStatus(true);
-                    }
-                }, new Runnable() {
-                    @Override
-                    public void run() {
-                        updateLoadingStatus(false);
-                    }
-                }, new Runnable() {
-                    @Override
-                    public void run() {
-                        updateLoadingStatus(false);
-                        showMessage(CategoryActivity.this, AppConstant.OOPS, AppConstant.TRY_LATER);
+                        if(mounted()){
+                            updateLoadingStatus(true);
+                        }
                     }
                 });
+                builder.setOnSuccess(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(mounted()){
+                            updateLoadingStatus(false);
+                        }
+                    }
+                });
+                builder.setOnError(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(mounted()){
+                            updateLoadingStatus(false);
+                            showMessage(CategoryActivity.this, AppConstant.OOPS, AppConstant.TRY_LATER);
+                        }
+                    }
+                });
+                categoryActivityViewModel.queryItemAdd(item, builder.build(), Item.FetchOption.FETCH_BY_ID);
             }
         });
 

@@ -13,11 +13,11 @@ import java.util.concurrent.TimeUnit;
 public class AsyncTaskExecution {
     Runnable onPreExecute, doInBackground, onSuccess, onError;
 
-    public AsyncTaskExecution(Runnable onPreExecute, @NonNull Runnable doInBackground, Runnable onSuccess, Runnable onError) {
-        this.onPreExecute = onPreExecute;
-        this.doInBackground = doInBackground;
-        this.onSuccess = onSuccess;
-        this.onError = onError;
+    public AsyncTaskExecution(AsyncTaskParameter asyncTaskParameter){
+        this.onPreExecute = asyncTaskParameter.getOnPreExecute();
+        this.doInBackground = asyncTaskParameter.getDoInBackground();
+        this.onSuccess = asyncTaskParameter.getOnSuccess();
+        this.onError = asyncTaskParameter.getOnError();
     }
 
     public void execute(){

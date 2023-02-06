@@ -22,8 +22,8 @@ public interface ItemDao {
     @Query("select * from Item")
     public List<Item> getItems();
 
-    @Query("select * from Item where id = :id")
-    public List<Item> getItemsByCategoryId(Integer id);
+    @Query("select * from Item where category_id = :categoryId")
+    public List<Item> getItemsByCategoryId(Integer categoryId);
 
     @Query("delete from Item where category_id = :categoryId ")
     public void deleteItemsWithCategoryId(Integer categoryId);

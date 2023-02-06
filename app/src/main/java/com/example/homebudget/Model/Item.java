@@ -26,6 +26,12 @@ public class Item {
         this.extra = "";
     }
 
+    public static enum FetchOption{
+        FETCH_ALL,
+        FETCH_BY_ID,
+        FETCH_NONE
+    }
+
     public Integer getId() {
         return id;
     }

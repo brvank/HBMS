@@ -21,6 +21,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.homebudget.Model.Plan;
 import com.example.homebudget.R;
+import com.example.homebudget.Service.Job.AsyncTaskParameter;
 import com.example.homebudget.Util.AppConstant;
 import com.example.homebudget.Util.AppUtil;
 import com.example.homebudget.Util.Callbacks.PlanCallback;
@@ -106,21 +107,24 @@ public class PlansFragment extends AppFragment {
     }
 
     private void getPlans(){
-        homeActivityViewModel.queryPlansGet(new Runnable() {
+        AsyncTaskParameter.Builder builder = new AsyncTaskParameter.Builder();
+        builder.setOnPreExecute(new Runnable() {
             @Override
             public void run() {
                 if(mounted()){
                     updateLoadingStatus(true);
                 }
             }
-        }, new Runnable() {
+        });
+        builder.setOnSuccess(new Runnable() {
             @Override
             public void run() {
                 if(mounted()){
                     updateLoadingStatus(false);
                 }
             }
-        }, new Runnable() {
+        });
+        builder.setOnError(new Runnable() {
             @Override
             public void run() {
                 if(mounted()){
@@ -129,6 +133,7 @@ public class PlansFragment extends AppFragment {
                 }
             }
         });
+        homeActivityViewModel.queryPlansGet(builder.build());
     }
 
     private void addObservers(){

@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
-public class CategoryActivityViewModel extends ViewModel {
+public class CategoryActivityViewModel extends DataViewModel {
     public MutableLiveData<Boolean> loading;
 
     public CategoryActivityViewModel(){
