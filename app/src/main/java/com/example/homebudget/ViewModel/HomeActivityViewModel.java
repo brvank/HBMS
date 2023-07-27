@@ -17,8 +17,8 @@ public class HomeActivityViewModel extends DataViewModel {
     public HomeActivityViewModel(){
         sharedPreferencesStorage = new SharedPreferencesStorage(AppApplication.getContext());
 
-        dashboardShowLiveData = new MutableLiveData<>(dashboardStatus());
-        planShowLiveData = new MutableLiveData<>(planStatus());
+        dashboardShowLiveData = new MutableLiveData<>(dashboardSavedStatus());
+        planShowLiveData = new MutableLiveData<>(planSavedStatus());
         userNameLiveData = new MutableLiveData<>(userName());
 
         setViewStates();
@@ -37,8 +37,8 @@ public class HomeActivityViewModel extends DataViewModel {
     }
 
     private void setViewStates(){
-        boolean d = dashboardStatus();
-        boolean p = planStatus();
+        boolean d = dashboardSavedStatus();
+        boolean p = planSavedStatus();
 
         if(!(d||p)){
             setDashboardShow(true);
@@ -59,7 +59,7 @@ public class HomeActivityViewModel extends DataViewModel {
         dashboardShowLiveData.setValue(d);
     }
 
-    private Boolean dashboardStatus(){
+    private Boolean dashboardSavedStatus(){
         return sharedPreferencesStorage.getBoolean(AppConstant.DASHBOARD_SHOW_SF);
     }
 
@@ -73,7 +73,7 @@ public class HomeActivityViewModel extends DataViewModel {
         planShowLiveData.setValue(p);
     }
 
-    private Boolean planStatus(){
+    private Boolean planSavedStatus(){
         return sharedPreferencesStorage.getBoolean(AppConstant.PLANS_SHOW_SF);
     }
 
@@ -93,8 +93,8 @@ public class HomeActivityViewModel extends DataViewModel {
 
     //update
     public void update(){
-        dashboardShowLiveData.setValue(dashboardStatus());
-        planShowLiveData.setValue(planStatus());
+        dashboardShowLiveData.setValue(dashboardSavedStatus());
+        planShowLiveData.setValue(planSavedStatus());
         userNameLiveData.setValue(userName());
     }
 
